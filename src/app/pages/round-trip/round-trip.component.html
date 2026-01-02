@@ -1,0 +1,390 @@
+<app-navbar></app-navbar>
+
+<!-- =================== DESKTOP VIEW =================== -->
+
+<div class="container-fluid py-4 d-none d-md-block">
+  <ng-container *ngIf="carOptions.length > 0; else noCars">
+    <!-- Journey Header -->
+    <!-- <nav class="breadcrumb px-4 py-3 mb-4 bg-white rounded-3 shadow-sm border">
+      <span class="text-secondary fw-medium"><i class="fas fa-home me-2"></i> Home &gt; Select Car</span>
+    </nav> -->
+
+    <div
+      class="journey-details bg-white shadow-sm rounded-3 px-4 py-3 d-flex justify-content-between align-items-center mb-4 border">
+      <div class="flex-grow-1">
+        <h5 class="mb-2 fw-bold text-dark">
+          <i class="fas fa-map-marker-alt text-primary me-2"></i>
+          {{ bookingData?.fromLocation }}
+          <i class="fas fa-arrow-right mx-3 text-secondary"></i>
+          {{ bookingData?.toLocation }}
+          <span class="badge bg-primary text-white ms-2 px-2 py-2 text-uppercase fs-6">{{ triptype }}</span>
+        </h5>
+        <p class="text-muted mb-0 fs-7">
+          <i class="fas fa-info-circle me-1"></i> All prices include GST, toll tax, and driver allowance
+        </p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <div class="text-center">
+          <span class="text-muted d-block small fw-medium"><i class="fas fa-calendar-alt me-1"></i>Pick up</span>
+          <span class="fw-semibold text-dark">{{ bookingData?.pickupDate }}</span>
+        </div>
+        <div class="text-center">
+          <span class="text-muted d-block small fw-medium"><i class="fas fa-calendar-alt me-1"></i>Return date</span>
+            <span class="fw-semibold text-dark">{{bookingData?.returnDate}}</span>
+        </div>
+        <div class="text-center">
+          <span class="text-muted d-block small fw-medium"><i class="fas fa-clock me-1"></i>Time</span>
+          <span class="fw-semibold text-dark">{{ bookingData?.pickupTime }}</span>
+        </div>
+        <button class="btn btn-outline-primary btn-sm ms-3 px-3 border-2 fw-medium" (click)="openBookingForm()">
+          <i class="fas fa-edit me-1"></i>Modify
+        </button>
+      </div>
+    </div>
+
+    <!-- Promo Banner -->
+    <div class="promo-banner position-relative mb-5">
+      <div class="d-flex justify-content-between align-items-center p-4 rounded-3 shadow-sm border-0 bg-dark">
+        <div class="d-flex align-items-center">
+          <div class="bg-white bg-opacity-20 rounded-circle p-3 me-3">
+            <i class="fas fa-gift fa-lg text-white"></i>
+          </div>
+          <div>
+            <h4 class="text-white mb-1 fw-bold">YOU'VE UNLOCKED A SPECIAL DISCOUNT!</h4>
+            <div class="text-white-70">Book now to get the lowest all-inclusive fares</div>
+          </div>
+        </div>
+        <div>
+          <span class="badge bg-warning text-dark fs-6 px-3 py-2 rounded-pill fw-bold">FLAT 12% OFF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="row">
+      <!-- Left Column - Car Images & Blog Posts -->
+      <div class="col-md-4">
+        <!-- Horizontal Image Scroll -->
+        <div class="places-slider-section mb-4">
+          <div class="places-slider-header">
+            <h5 class="fw-bold text-dark mb-0">Popular Destinations</h5>
+            <span class="car-count">{{ placesImages.length }} destinations</span>
+          </div>
+          <div class="places-scroll-container">
+            <div class="places-scroll-track">
+              <div class="place-item" *ngFor="let place of placesImages">
+                <img [src]="place.image" 
+                    [alt]="place.title"
+                    class="img-fluid rounded-2 shadow-sm">
+                <div class="place-caption mt-2">
+                  <h6 class="fw-semibold text-dark mb-1">{{ place.title }}</h6>
+                  <p class="text-muted small mb-1">{{ place.description }}</p>
+                  <span class="place-type">{{ place.type }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="scroll-indicator text-center margin-top-10">
+            <i class="fas fa-chevron-left me-3 text-muted"></i>
+            <span class="text-muted small">Discover beautiful destinations</span>
+            <i class="fas fa-chevron-right ms-3 text-muted"></i>
+          </div>
+        </div>
+
+
+        <!-- Blog Posts Section -->
+        <div class="blog-posts-section">
+          <h5 class="fw-bold text-dark margin-bottom-15">Travel Tips & Guides</h5>
+          <div class="blog-post-card" *ngFor="let post of blogPosts">
+            <div class="blog-post-image">
+              <img [src]="post.image" [alt]="post.title" class="img-fluid rounded-2">
+            </div>
+            <div class="blog-post-content">
+              <h6 class="fw-semibold text-dark mb-2">{{ post.title }}</h6>
+              <p class="text-muted small mb-2">{{ post.excerpt }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-primary small fw-medium">Read More</span>
+                <span class="text-muted small">{{ post.readTime }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Car List -->
+      <div class="col-md-8">
+        <!-- =================== CAR LIST =================== -->
+        <div class="car-list">
+          <div class="card mb-4 shadow-sm border-1 rounded-3 overflow-hidden car-card-hover"
+            *ngFor="let car of carOptions; let i = index" [id]="'car-' + car.id">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center justify-content-between">
+                <!-- Car Image & Name -->
+                <div class="d-flex align-items-center flex-grow-1">
+                  <div class="position-relative me-4">
+                    <img [src]="car.image || 'assets/images/default-car.jpg'" [alt]="car.cab_name"
+                      class="rounded-3 border-0 shadow-sm" style="width: 140px; height: 90px; object-fit: cover;">
+                    <span
+                      class="position-absolute top-0 start-0 bg-primary text-white px-2 py-1 small rounded-bottom-end fw-medium">
+                      {{ car.capacity }} Seats
+                    </span>
+                    <!-- Popular Badge -->
+                    <span
+                      class="position-absolute top-0 end-0 bg-success text-white px-2 py-1 small rounded-bottom-start fw-medium"
+                      *ngIf="i < 2">
+                      <i class="fas fa-bolt me-1"></i>Popular
+                    </span>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h5 class="mb-1 fw-bold text-dark">{{ car.cab_name }}</h5>
+                    <div class="d-flex align-items-center gap-3 margin-bottom-10">
+                      <!-- <span class="badge bg-light text-dark border small">{{ car.cab_type | titlecase }}</span> -->
+                      <span
+                        class="badge small"
+                        style="background:black; color:white; border:1px solid #333;"
+                      >
+                        <span style="color:yellow;">⭐</span> {{ car.rating }}
+                      </span>
+
+                      <span class="text-success small fw-medium" *ngIf="car.discount_percent > 0">
+                        <i class="fas fa-tag me-1"></i>{{ car.discount_percent }}% OFF
+                      </span>
+                    </div>
+                    <div class="margin-top-10">
+                      <span class="text-muted small">
+                        <i class="fas fa-user-friends me-1"></i>Up to {{ car.capacity }} passengers
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="text-end me-4">
+                  <div class="d-flex align-items-baseline justify-content-end margin-bottom-10">
+                    <span class="h3 mb-0 fw-bold text-primary">₹{{ car.final_fare }}</span>
+                    <span class="text-muted text-decoration-line-through ms-2 fs-6" *ngIf="car.original_fare">
+                      ₹{{ car.original_fare }}
+                    </span>
+                  </div>
+                  <div class="text-muted small margin-bottom-10"><span><b>{{ car.distance_km }} Kms</b></span> Included.</div>
+                  <div class="text-muted small">Post Limit: <span><b>₹{{ car.extra_price_per_km }}/km</b></span></div>
+                </div>
+
+                <!-- Actions -->
+                <div class="text-center" style="min-width: 140px;">
+                  <button class="btn btn-primary margin-bottom-10 rounded-2 fw-bold py-2 px-3 shadow-sm btn-hover"
+                    (click)="selectCar(car)">
+                    <i class="fas fa-check-circle me-2"></i>Select Car
+                  </button> <br>
+                  <button class="btn btn-link small text-decoration-none p-0 text-muted"
+                    (click)="showDetails(car)">
+                    <i class="fas fa-chevron-down me-1"></i>
+                    {{ car.showDetails ? 'Hide' : 'View' }} Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="details-section bg-light px-4 py-4 border-top" *ngIf="car.showDetails">
+              <div class="tab-navigation margin-bottom-25">
+                <div class="nav nav-pills nav-fill">
+                  <button class="nav-link rounded-pill mx-1 border-0 fw-medium"
+                    [class.active]="car.activeTab === 'inclusions'" (click)="setActiveTab(car, 'inclusions')">
+                    <i class="fas fa-check-circle me-2"></i>INCLUSIONS
+                  </button>
+                  <button class="nav-link rounded-pill mx-1 border-0 fw-medium"
+                    [class.active]="car.activeTab === 'exclusions'" (click)="setActiveTab(car, 'exclusions')">
+                    <i class="fas fa-times-circle me-2"></i>EXCLUSIONS
+                  </button>
+                  <button class="nav-link rounded-pill mx-1 border-0 fw-medium"
+                    [class.active]="car.activeTab === 'facilities'" (click)="setActiveTab(car, 'facilities')">
+                    <i class="fas fa-star me-2"></i>FACILITIES
+                  </button>
+                  <button class="nav-link rounded-pill mx-1 border-0 fw-medium" [class.active]="car.activeTab === 'tc'"
+                    (click)="setActiveTab(car, 'tc')">
+                    <i class="fas fa-file-alt me-2"></i>TERMS & CONDITIONS
+                  </button>
+                </div>
+              </div>
+
+              <div class="tab-content">
+                <div class="row g-3">
+                  <div *ngFor="let item of getTabContent(car); let i = index" class="col-md-6">
+                    <div class="d-flex align-items-center p-2 rounded-2 bg-white shadow-sm-hover">
+                      <i [class]="item.icon + ' me-3 fs-5'" [class.text-primary]="car.activeTab === 'inclusions'"
+                        [class.text-success]="car.activeTab === 'facilities'"
+                        [class.text-warning]="car.activeTab === 'exclusions'"
+                        [class.text-info]="car.activeTab === 'tc'"></i>
+                      <span class="text-dark fw-medium">{{ item.text }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noCars>
+    <div class="alert alert-warning text-center my-5 py-5 rounded-3 shadow-sm border-0">
+      <div class="margin-bottom-25">
+        <i class="fas fa-exclamation-circle fa-2x text-warning margin-bottom-15"></i>
+      </div>
+      <h4 class="fw-bold text-dark margin-bottom-10">{{ noCabsMessage || 'No cars available for the selected route.' }}
+      </h4>
+      <p class="text-muted margin-bottom-0">Please try modifying your search criteria or check back later.</p>
+    </div>
+  </ng-template>
+</div>
+
+<!-- =================== MOBILE VIEW =================== -->
+<div class="mobile-container d-block d-md-none">
+  <ng-container *ngIf="carOptions.length > 0; else noCars">
+    <div class="journey-header bg-white p-3 d-flex justify-content-between align-items-center border-bottom">
+      <div class="route-info">
+        <!-- <div class="fw-bold text-dark">{{ bookingData?.fromLocation }} → {{ bookingData?.toLocation }}</div> -->
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-primary">🟢</span>
+          <span class="fw-bold text-dark">{{ bookingData?.fromLocation }}</span>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-danger">🔴</span>
+          <span class="fw-bold text-dark">{{ bookingData?.toLocation }}</span>
+        </div>
+        <div class="badge bg-primary text-white ms-3 text-uppercase fs-7 mt-2">{{ triptype }}</div>
+      </div>
+      <div class="booking-details text-end">
+        <div class="small">
+          <span class="text-muted">Pickup: </span>
+          <span class="fw-semibold">{{ bookingData?.pickupDate }}</span>
+        </div>
+        <div class="small">
+          <span class="text-muted">Return: </span>
+          <span class="fw-semibold">{{ bookingData?.returnDate }}</span>
+        </div>
+        <div class="small">
+          <span class="text-muted">Time: </span>
+          <span class="fw-semibold">{{ bookingData?.pickupTime }}</span>
+        </div>
+        <a (click)="openBookingForm()" class="text-primary small text-decoration-underline">Modify</a>
+      </div>
+    </div>
+
+    <div class="price-banner text-center fw-bold bg-primary text-white py-3 small">
+      <i class="fas fa-check-circle me-1"></i> ALL PRICES INCLUDE TOLL, TAXES & GST!
+    </div>
+
+    <div class="promo-banner-mobile bg-warning bg-opacity-10 p-3 text-center border-bottom">
+      <span class="badge bg-warning text-dark me-2">FLAT 12% OFF</span>
+      <span class="text-dark small">You've unlocked a special discount!</span>
+    </div>
+
+    <!-- Car Type Selector - MOBILE ONLY -->
+    <div class="car-type-selector">
+      <!-- Car Types from carOptions -->
+      <div class="car-type" *ngFor="let type of getUniqueCarTypes()" (click)="selectCarType(type.cab_type)">
+        <div class="car-icon" [class.active]="selectedCarType === type.cab_type">
+          <img [src]="type.image || 'assets/images/default-car.jpg'" [alt]="type.cab_type">
+        </div>
+        <div class="price">₹{{type.final_fare}}</div>
+        <div class="car-type-name small text-muted">{{type.cab_type}}</div>
+      </div>
+    </div>
+
+    <!-- Car Cards -->
+    <div class="car-cards">
+      <div class="car-card" *ngFor="let car of filteredCarOptions">
+        <div class="car-header">
+          <h3 class="fs-3">{{car.cab_name}}</h3>
+          <span class="toll-badge">Tolls Included</span>
+        </div>
+
+        <!-- Driver Allowance Info -->
+        <div class="driver-info mb-2 d-none">
+          <i class="fas fa-user text-orange me-1"></i>
+          <span class="small text-muted">Driver allowance included</span>
+        </div>
+
+        <!-- Distance Info -->
+        <div class="distance-info mb-3">
+          <div class="d-flex justify-content-between">
+            <span class="text-muted small">
+              <i class="fas fa-user-friends me-1"></i>Up to {{ car.capacity }} passengers
+            </span>
+            <span class="text-success small fw-medium" *ngIf="car.discount_percent > 0">
+              <i class="fas fa-tag me-1"></i>{{ car.discount_percent }}% OFF
+            </span>
+          </div>
+        </div>
+
+        <div class="car-content">
+          <div class="car-image">
+            <img [src]="car.image || 'assets/images/default-car.jpg'" [alt]="car.cab_name">
+          </div>
+          <div class="price-details">
+            <div class="d-flex align-items-center justify-content-center mb-1">
+              
+              <div class="current-price">₹{{car.final_fare}}</div>
+              <div class="original-price mx-2">₹{{ car.original_fare }}</div>
+            </div>
+            
+            <div class="pd">             
+              <span class="small text-dark">{{car.distance_km}} kms included</span><br>
+              <span class="small text-muted">Post limit: ₹{{car.price_per_km}}/km</span>
+              <!-- <div class="distance small text-muted">for {{car.distance_km}} kms</div> -->
+              <!-- <div class="gst-text small text-orange">+ ₹{{car.gst_amount}} Charges & Taxes</div> -->
+              <span class="limited-badge" *ngIf="car.discount > 0">LIMITED OFFER</span>
+           </div>
+          </div>
+        </div>
+
+        <button class="select-btn" (click)="selectCar(car)">SELECT CAR</button>
+
+        <!-- Tabs -->
+        <div class="tab-buttons">
+          <button [class.active]="car.activeTab === 'inclusions'" (click)="setActiveTab(car, 'inclusions')">
+            INCLUSIONS
+          </button>
+          <button [class.active]="car.activeTab === 'exclusions'" (click)="setActiveTab(car, 'exclusions')">
+            EXCLUSIONS
+          </button>
+          <button [class.active]="car.activeTab === 'facilities'" (click)="setActiveTab(car, 'facilities')">
+            FACILITIES
+          </button>
+          <button [class.active]="car.activeTab === 'tc'" (click)="setActiveTab(car, 'tc')">
+            T&C
+          </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content" *ngIf="car.showDetails">
+          <div class="content-item" *ngFor="let item of getTabContent(car)">
+            <i [class]="item.icon + ' text-orange'"></i>
+            <span class="small">{{item.text}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <ng-template #noCars>
+    <div class="alert alert-warning text-center mx-3 my-5 py-4 rounded-3">
+      <i class="fas fa-exclamation-circle me-2"></i>
+      <h6 class="d-inline">{{ noCabsMessage || 'No cars available for the selected route.' }}</h6>
+      <p class="mt-2 mb-0 small">Please try modifying your search criteria.</p>
+    </div>
+  </ng-template>
+</div>
+
+<!-- KEEP ONLY ONCE -->
+<app-booking-form-modal
+  [prefillData]="bookingData"
+  (bookingUpdated)="onBookingUpdated($event)">
+</app-booking-form-modal>
+
+<app-footer></app-footer>

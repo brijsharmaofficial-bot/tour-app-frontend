@@ -1,0 +1,68 @@
+footer {
+  background: #23272b;
+  color: #f8f9fa;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  border-top: 3px solid #0d6efd;
+}
+
+footer h5, footer h6 {
+  color: #fff;
+  font-weight: 600;
+}
+
+footer a {
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+footer .bi {
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+footer .me-2 {
+  margin-right: 0.5rem !important;
+}
+
+footer .card {
+  background: transparent;
+  border: none;
+}
+
+footer .text-center span {
+  font-weight: bold;
+}
+
+.footer-social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #fff;
+  background: #3b5998; /* Default to Facebook blue */
+  margin-right: 8px;
+  font-size: 1.2rem;
+  /* transition: background 0.2s; */
+}
+.footer-social-icon.facebook { background: #3b5998; }
+.footer-social-icon.twitter { background: #1da1f2; }
+.footer-social-icon.instagram { background: #e4405f; }
+.footer-social-icon.whatsapp { background: #25d366; }
+.footer-social-icon:hover { opacity: 1; }
+
+@media (max-width: 767px) {
+  footer .row > div {
+    text-align: center;
+  }
+}
+.bg-dark{
+ background: #000000 !important;
+}

@@ -1,0 +1,379 @@
+/* services.component.css */
+.services-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.services-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 119, 22, 0.3), transparent);
+}
+
+.section-badge {
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.service-card {
+  background: #ffffff;
+  border-radius: 24px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.service-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+  height: 220px;
+}
+
+.service-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.service-card:hover .service-image {
+  transform: scale(1.05);
+}
+
+.card-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+}
+
+.card-badge .badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-card:hover .image-overlay {
+  opacity: 1;
+}
+
+.btn-overlay {
+  background: rgba(255, 255, 255, 0.95);
+  color: #ff7716;
+  padding: 12px 24px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  transform: translateY(10px);
+}
+
+.service-card:hover .btn-overlay {
+  transform: translateY(0);
+}
+
+.btn-overlay:hover {
+  background: #ffffff;
+  color: #ff7716;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 119, 22, 0.3);
+}
+
+.card-body {
+  padding: 0.7rem;
+}
+
+.service-icon-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.service-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  background: rgba(255, 119, 22, 0.1);
+  color: #ff7716;
+  box-shadow: 0 8px 20px rgba(255, 119, 22, 0.15);
+  transition: all 0.3s ease;
+}
+
+.service-card:hover .service-icon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 12px 24px rgba(255, 119, 22, 0.2);
+}
+
+.service-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.service-description {
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  text-align:justify;
+  margin-bottom: 1.5rem;
+}
+
+.service-features {
+  display: grid;
+  gap: 6px;
+  margin-top: 1rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.feature-icon {
+  color: #ff7716;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.feature-text {
+  font-size: 0.875rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.btn-service {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff7716;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  border: none;
+}
+
+.btn-service:hover {
+  background: #ff6500;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 119, 22, 0.3);
+}
+
+.cta-card {
+  box-shadow: 0 20px 40px rgba(255, 119, 22, 0.15);
+  border: none;
+  margin-top: 4rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1199.98px) {
+  .section-title {
+    font-size: 2.25rem;
+  }
+  
+  .card-image-wrapper {
+    height: 200px;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .services-section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .service-card {
+    margin-bottom: 2rem;
+  }
+  
+  .card-image-wrapper {
+    height: 180px;
+  }
+  
+  .cta-card {
+    margin-top: 3rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .services-section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+  
+  .section-title {
+    font-size: 1.75rem;
+  }
+  
+  .section-subtitle {
+    font-size: 1rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .service-title {
+    font-size: 1.1rem;
+  }
+  
+  .service-description {
+    font-size: 0.9rem;
+  }
+  
+  .btn-service {
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+  
+  .cta-card {
+    padding: 2rem 1.5rem;
+  }
+  
+  .cta-card h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .card-image-wrapper {
+    height: 160px;
+  }
+  
+  .service-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+  
+  .service-features {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-card {
+    text-align: center;
+  }
+  
+  .btn-overlay {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .services-section {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  }
+  
+  .service-card {
+    background: #2d3748;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .service-title {
+    color: #f7fafc;
+  }
+  
+  .service-description {
+    color: #cbd5e0;
+  }
+  
+  .feature-text {
+    color: #e2e8f0;
+  }
+  
+  .section-title {
+    background: linear-gradient(135deg, #f7fafc 0%, #e2e8f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .section-subtitle {
+    color: #a0aec0;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .services-section {
+    background: white !important;
+  }
+  
+  .service-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+  
+  .btn-service, .btn-overlay {
+    display: none !important;
+  }
+}

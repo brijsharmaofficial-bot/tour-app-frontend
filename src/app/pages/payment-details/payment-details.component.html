@@ -1,0 +1,415 @@
+<app-navbar />
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-xxl-10">
+      
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4 d-none d-md-block">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Home</a></li>
+          <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Select Car</a></li>
+          <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Booking</a></li>
+          <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Payment</li>
+        </ol>
+      </nav>
+
+      <div class="row g-4">
+        
+        <!-- Left Section - Payment Details -->
+        <div class="col-12 col-lg-8">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+              <div class="d-flex align-items-center">
+                <!-- <button class="btn btn-outline-primary btn-sm me-3 d-flex align-items-center" (click)="goBack()">
+                  <span class="material-icons-outlined me-1 fs-6">arrow_back</span>
+                  Back
+                </button> -->
+                <h2 class="h4 mb-0 text-primary fw-semibold">
+                  <span class="material-icons-outlined me-2">payments</span>
+                    Payment Details
+                </h2>
+              </div>
+            </div>
+
+            <div class="card-body p-4">
+              <form [formGroup]="paymentForm" (ngSubmit)="bookNow()">
+                
+                <!-- Payment Options -->
+                <div class="mb-4">
+                  <label class="form-label fw-semibold text-dark mb-3">SELECT PAYMENT OPTION</label>
+                  <div class="row g-3">
+                    <!-- Pay 0 Now -->
+                    <div class="col-6 col-sm-6 col-lg-3">
+                      <div class="payment-option-card">
+                        <input type="radio" formControlName="paymentOption" value="0" 
+                               id="payLater" class="payment-radio">
+                        <label for="payLater" class="payment-label w-100">
+                          <div class="payment-content text-center p-3">
+                            <div class="payment-amount h5 text-primary mb-1">{{formatCurrency(0)}}</div>
+                            <div class="payment-type small text-muted">Pay Now</div>
+                            <div class="payment-later small text-dark mt-2">
+                              {{formatCurrency(getCarPrice())}} later
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Pay 25% -->
+                    <div class="col-6 col-sm-6 col-lg-3">
+                      <div class="payment-option-card">
+                        <input type="radio" formControlName="paymentOption" 
+                               [value]="calculatePaymentAmount(0.25)" 
+                               id="pay25" class="payment-radio">
+                        <label for="pay25" class="payment-label w-100">
+                          <div class="payment-content text-center p-3">
+                            <div class="payment-percent h6 text-success mb-1">25%</div>
+                            <div class="payment-amount h5 text-primary mb-1">
+                              {{formatCurrency(calculatePaymentAmount(0.25))}}
+                            </div>
+                            <div class="payment-type small text-muted">Pay Now</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Pay 50% -->
+                    <div class="col-6 col-sm-6 col-lg-3">
+                      <div class="payment-option-card">
+                        <input type="radio" formControlName="paymentOption" 
+                               [value]="calculatePaymentAmount(0.50)" 
+                               id="pay50" class="payment-radio">
+                        <label for="pay50" class="payment-label w-100">
+                          <div class="payment-content text-center p-3">
+                            <div class="payment-percent h6 text-warning mb-1">50%</div>
+                            <div class="payment-amount h5 text-primary mb-1">
+                              {{formatCurrency(calculatePaymentAmount(0.50))}}
+                            </div>
+                            <div class="payment-type small text-muted">Pay Now</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Pay 100% -->
+                    <div class="col-6 col-sm-6 col-lg-3">
+                      <div class="payment-option-card">
+                        <input type="radio" formControlName="paymentOption" 
+                               [value]="getCarPrice()" 
+                               id="pay100" class="payment-radio">
+                        <label for="pay100" class="payment-label w-100">
+                          <div class="payment-content text-center p-3">
+                            <div class="payment-percent h6 text-danger mb-1">100%</div>
+                            <div class="payment-amount h5 text-primary mb-1">
+                              {{formatCurrency(getCarPrice())}}
+                            </div>
+                            <div class="payment-type small text-muted">Pay Now</div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Validation Error -->
+                  <div class="invalid-feedback d-block mt-2" 
+                       *ngIf="isFieldInvalid('paymentOption')">
+                    <span class="material-icons-outlined me-1 align-middle fs-6">error</span>
+                    Please select a payment option
+                  </div>
+                </div>
+
+                <!-- Progress Message -->
+                <div class="alert alert-info border-0 mb-4">
+                  <div class="d-flex align-items-center">
+                    <span class="material-icons-outlined text-info me-2">check_circle</span>
+                    <span class="fw-semibold">You are one step away from booking your {{getCarName()}}!</span>
+                  </div>
+                </div>
+               
+                 <!--  Add GST (optional) -->
+
+                <div>
+                  <div class="col-12 col-lg-6" *ngIf="!showGST">
+                    <button type="button" class="btn btn-outline-primary btn-md addgst" (click)="addGST()">
+                        I have a GST Number (Optional)
+                    </button>
+                  </div>
+
+                 <div class="row">
+                  <div class="col-12 col-lg-6" *ngIf="showGST">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <label class="form-label fw-semibold text-dark small">
+                        Company Name
+                      </label>           
+                    </div>  
+                    <div class="input-group input-group-lg mb-2">
+                      <input
+                        type="text"
+                        formControlName="companyname"
+                        placeholder="Enter your Company Name"
+                        class="form-control py-2 py-md-2"
+                        [class.is-invalid]="isFieldInvalid('companyname')">
+                    </div>
+                  
+                    <div class="invalid-feedback d-block mt-1"
+                        *ngIf="paymentForm.get('companyname')?.touched &&
+                                paymentForm.get('companyname')?.errors">
+                      <span class="material-icons-outlined me-1 align-middle fs-6">error</span>
+
+                      <span *ngIf="paymentForm.get('companyname')?.errors?.['required']">
+                        Company name is required
+                      </span>
+
+                      <span *ngIf="paymentForm.get('companyname')?.errors?.['minlength']">
+                        Company name must be at least 2 characters
+                      </span>
+
+                      <span *ngIf="paymentForm.get('companyname')?.errors?.['pattern']">
+                        Only letters, numbers & basic symbols allowed
+                      </span>
+                    </div>
+
+                  </div>
+                  
+                  <div class="col-12 col-lg-6" *ngIf="showGST">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <label class="form-label fw-semibold text-dark small">
+                        GST Number
+                      </label>
+                  
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-link text-danger"
+                        (click)="removeGST()">
+                        Remove
+                      </button>
+                    </div>  
+                    <div class="input-group input-group-lg mb-2">
+                      <input
+                        type="text"
+                        formControlName="usergst"
+                        placeholder="Enter your GST Number"
+                        class="form-control py-2 py-md-2"
+                        (input)="onGSTInput($event)"
+                        [class.is-invalid]="isFieldInvalid('usergst')">
+                    </div>
+                  
+                    <div class="invalid-feedback d-block mt-1"
+                        *ngIf="paymentForm.get('usergst')?.touched &&
+                                paymentForm.get('usergst')?.errors">
+                      <span class="material-icons-outlined me-1 align-middle fs-6">error</span>
+
+                      <span *ngIf="paymentForm.get('usergst')?.errors?.['required']">
+                        GST number is required
+                      </span>
+
+                      <span *ngIf="paymentForm.get('usergst')?.errors?.['pattern']">
+                        Enter a valid GST number (15 characters)
+                      </span>
+                    </div>
+
+                  </div>
+                 </div>
+                </div>
+
+                <!-- Coupon Section -->
+                <div class="row mb-4 d-none">
+                  <div class="col-12">
+                    <label class="form-label fw-semibold text-dark mb-2">APPLY COUPON CODE</label>
+                    <div class="input-group input-group-lg">
+                      <input type="text" formControlName="couponCode" 
+                             class="form-control py-3" 
+                             placeholder="Enter coupon code">
+                      <button type="button" class="btn btn-outline-primary px-4">
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="row mt-4">
+                  <div class="col-12">
+                    <button type="submit" 
+                            class="btn btn-primary btn-lg w-100 py-3 fw-semibold d-flex align-items-center justify-content-center"
+                            [disabled]="paymentForm.invalid">
+                      <span class="material-icons-outlined me-2 fs-5">lock</span>
+                      PROCEED TO PAYMENT
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Security Banner -->
+          <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body p-4">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <h6 class="fw-semibold text-dark mb-2">100% Secure Payments</h6>
+                  <p class="text-muted mb-0 small">Your payment information is encrypted and secure. We don't share your details with anyone.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                  <img src="../../../assets/images/payment-detail-page.png" alt="Secure Payments" class="img-fluid" style="max-height: 80px;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Section - Booking Summary -->
+        <div class="col-12 col-lg-4">
+          <div class="card border-0 shadow-sm sticky-top" style="top: 2rem;">
+            <div class="card-header bg-dark text-white py-3">
+              <h2 class="h4 mb-0 fw-semibold">
+                <span class="material-icons-outlined me-2">receipt_long</span>
+                BOOKING SUMMARY
+              </h2>
+            </div>
+
+            <div class="card-body p-0">
+              <!-- Trip Details -->
+              <div class="p-4 border-bottom">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="bg-dark bg-opacity-10 rounded-circle p-2 me-3">
+                    <span class="material-icons-outlined">location_on</span>
+                  </div>
+                  <div>
+                    <div class="fw-semibold text-dark">Itinerary</div>
+                    <div class="text-muted small">
+                      {{bookingDetails?.bookingData?.fromLocation}} → {{bookingDetails?.bookingData?.toLocation}}
+
+                      @if(bookingDetails?.selectedCar?.trip_type ==='local'){
+                        {{bookingDetails?.bookingData?.city}}
+                      }
+                      @if(bookingDetails?.selectedCar?.trip_type ==='airport'){
+                        <span *ngIf="bookingDetails?.bookingData?.airportTripType === 'dropToAirport'">
+                          Drop ({{ bookingDetails?.bookingData?.dropLocation }} - {{bookingDetails?.bookingData?.pickupAddress}})
+                        </span>
+                        
+                        <span *ngIf="bookingDetails?.bookingData?.airportTripType === 'pickFromAirport'">
+                          Pickup ({{ bookingDetails?.bookingData?.dropLocation }} - {{bookingDetails?.bookingData?.pickupAddress}} )
+                        </span>  
+                      }
+                      @if(bookingDetails?.selectedCar?.trip_type ==='roundtrip'){
+                        {{bookingDetails?.bookingData?.fromLocation}} → {{bookingDetails?.bookingData?.toLocation}}
+                      }
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center mb-3">
+                  <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                    <span class="material-icons-outlined text-success">event</span>
+                  </div>
+                  <div>
+                    <div class="fw-semibold text-dark">Pickup Date & Time</div>
+                    <div class="text-muted small">{{bookingDetails?.bookingData?.pickupDate}} at {{bookingDetails?.bookingData?.pickupTime}}</div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center">
+                  <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                    <span class="material-icons-outlined text-info">directions_car</span>
+                  </div>
+                  <div>
+                    <div class="fw-semibold text-dark">Car Type</div>
+                    <div class="text-muted small">{{getCarName()}} or Equivalent</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fare Breakdown -->
+              <div class="p-4 border-bottom">
+                <h6 class="fw-semibold text-dark mb-3">Fare Details</h6>
+                
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  @if(bookingDetails?.selectedCar?.trip_type ==='local'){
+                     <span class="text-muted">Distance Included</span>
+                     <span class="fw-semibold">{{getDistanceLocalhr() }} hr - {{getDistanceLocalkms() }} kms</span>
+                  }@else{
+                    <span class="text-muted">Distance Included</span>
+                    <span class="fw-semibold">{{getDistanceIncluded()}} km</span>
+                  }
+                 
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-muted">Base Fare</span>
+                  <span class="fw-semibold">{{getPriceWithoutGst()}}</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2 d-none">
+                  <span class="text-muted">Driver Allowance</span>
+                  <span class="fw-semibold">{{formatCurrency(getDriverAllowance())}}</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2 d-none">
+                  <span class="text-muted">Toll & Taxes</span>
+                  <span class="fw-semibold">{{formatCurrency(getTollTax())}}</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-muted">GST Amount</span>
+                  <span class="fw-semibold">{{formatCurrency(getGstAmount())}}</span>
+                </div>
+
+                <hr class="my-2">
+
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bold text-dark">Total Amount</span>
+                  <span class="h5 text-primary fw-bold">{{formatCurrency(getCarPrice())}}</span>
+                </div>
+              </div>
+
+              <!-- Dynamic Tabs -->
+              <div class="p-3 bg-light">
+                <div class="tab-buttons nav nav-pills nav-justified">
+                  <button class="nav-link small fw-semibold" 
+                          [class.active]="getCurrentCar()?.activeTab === 'inclusions'" 
+                          (click)="setActiveTab(getCurrentCar()!, 'inclusions')">
+                    INCLUSIONS
+                  </button>
+                  <button class="nav-link small fw-semibold" 
+                          [class.active]="getCurrentCar()?.activeTab === 'exclusions'" 
+                          (click)="setActiveTab(getCurrentCar()!, 'exclusions')">
+                    EXCLUSIONS
+                  </button>
+                  <button class="nav-link small fw-semibold" 
+                          [class.active]="getCurrentCar()?.activeTab === 'facilities'" 
+                          (click)="setActiveTab(getCurrentCar()!, 'facilities')">
+                    FACILITIES
+                  </button>
+                  <button class="nav-link small fw-semibold" 
+                          [class.active]="getCurrentCar()?.activeTab === 'tc'" 
+                          (click)="setActiveTab(getCurrentCar()!, 'tc')">
+                    T&C
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tab Content -->
+              <div class="tab-content p-4" *ngIf="getCurrentCar()?.showDetails">
+                <div class="content-item d-flex align-items-center" 
+                    *ngFor="let item of getTabContent(getCurrentCar()!)">
+                  <div class="icon-container me-3" [ngClass]="getIconColorClass(getCurrentCar()!.activeTab)">
+                    <span class="material-icons-outlined">{{item.icon}}</span>
+                  </div>
+                  <span class="small">{{item.text}}</span>
+                </div>
+                
+                <!-- Empty State -->
+                <div *ngIf="getTabContent(getCurrentCar()!).length === 0" class="text-center text-muted py-3">
+                  <span class="material-icons-outlined fs-1 mb-2">info</span>
+                  <p class="small mb-0">No information available for this section</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,553 @@
+<div class="booking-section" [class.no-bg]="isModal">
+  <h1 class="text-center text-white here-heading" *ngIf="!isModal">Your Journey, Our Promise</h1>
+
+  <!-- Desktop View -->
+  <div class="booking-card d-none d-lg-block">
+    <!-- Trip Type Selection -->
+    <div class="trip-types">
+      <button type="button" class="btn f" [class.btn-info]="selectedTripType === 'ONE WAY'"
+        [class.text-white]="selectedTripType === 'ONE WAY'" (click)="selectTripType('ONE WAY')">
+        ONE WAY
+      </button>
+      <button type="button" class="btn" [class.btn-info]="selectedTripType === 'ROUND TRIP'"
+        [class.text-white]="selectedTripType === 'ROUND TRIP'" (click)="selectTripType('ROUND TRIP')">
+        ROUND TRIP
+      </button>
+      <button type="button" class="btn" [class.btn-info]="selectedTripType === 'LOCAL'"
+        [class.text-white]="selectedTripType === 'LOCAL'" (click)="selectTripType('LOCAL')">
+        LOCAL
+      </button>
+      <button type="button" class="btn l" [class.btn-info]="selectedTripType === 'AIRPORT'"
+        [class.text-white]="selectedTripType === 'AIRPORT'" (click)="selectTripType('AIRPORT')">
+        AIRPORT
+      </button>
+    </div>
+
+    <!-- Booking Form -->
+    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+      <div class="row g-2 align-items-end bform mt-2 mb-4">
+        <!-- City Input for Local -->
+        <div class="col" *ngIf="selectedTripType === 'LOCAL'">
+          <div class="position-relative">
+            <label for="city" class="form-label">CITY</label>
+            <input type="text" class="form-control" id="city" formControlName="city" placeholder="Enter City"
+              (focus)="showLocalCityDropdown = true" (input)="filterLocalCities($event)"
+              (blur)="hideDropdownWithDelay('local')" autocomplete="off" />
+            <div class="dropdown-menu show w-100" *ngIf="showLocalCityDropdown && filteredLocalCities.length"
+              style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+              <div class="dropdown-header fw-bold small text-primary">
+                POPULAR CITIES
+              </div>
+              <button type="button" class="dropdown-item" *ngFor="let city of filteredLocalCities"
+                (mousedown)="selectLocalCity(city)">
+                {{ city.name }}, {{ city.state }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- From/To Location for One Way and Round Trip -->
+        <ng-container *ngIf="
+            selectedTripType === 'ONE WAY' || selectedTripType === 'ROUND TRIP'
+          ">
+          <div class="col">
+            <!-- FROM Input -->
+            <div class="position-relative">
+              <label for="fromLocation" class="form-label">FROM</label>
+              <input type="text" class="form-control" id="fromLocation" formControlName="fromLocation"
+                placeholder="Enter Pickup City" (focus)="showFromDropdown = true" (input)="filterFromCities($event)"
+                (blur)="hideDropdownWithDelay('from')" autocomplete="off" />
+              <div class="dropdown-menu show w-100" *ngIf="showFromDropdown && filteredFromCities.length"
+                style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                <div class="dropdown-header fw-bold small text-primary">
+                  POPULAR CITIES
+                </div>
+                <button type="button" class="dropdown-item" *ngFor="let city of filteredFromCities"
+                  (mousedown)="selectFromCity(city)">
+                  {{ city.name }}, {{ city.state }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-auto d-flex align-items-end mb-2">
+            <button type="button" class="btn btn-link" (click)="swapLocations()">
+              <i class="fas fa-exchange-alt"></i>
+            </button>
+          </div>
+          <div class="col">
+            <!-- TO Input -->
+            <div class="position-relative">
+              <label for="toLocation" class="form-label">TO</label>
+              <input type="text" class="form-control" id="toLocation" formControlName="toLocation"
+                placeholder="Enter Drop City" (focus)="showToDropdown = true" (input)="filterToCities($event)"
+                (blur)="hideDropdownWithDelay('to')" autocomplete="off" />
+              <div class="dropdown-menu show w-100" *ngIf="showToDropdown && filteredToCities.length"
+                style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                <div class="dropdown-header fw-bold small text-primary">
+                  POPULAR CITIES
+                </div>
+                <button type="button" class="dropdown-item" *ngFor="let city of filteredToCities"
+                  (mousedown)="selectToCity(city)">
+                  {{ city.name }}, {{ city.state }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Airport Pickup/Drop -->
+        <ng-container *ngIf="selectedTripType === 'AIRPORT'">
+          <div class="row g-2">
+            <div class="col-12 col-md-2 mb-2">
+              <label for="airportTripType" class="form-label">TRIP TYPE</label>
+              <select class="form-select" id="airportTripType" formControlName="airportTripType">
+                <option value="dropToAirport">Drop to Airport</option>
+                <option value="pickFromAirport">Pick from Airport</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-4 mb-2">
+              <label for="dropLocation" class="form-label">
+                {{ bookingForm.get('airportTripType')?.value === 'dropToAirport' ? 'DROP AIRPORT' : 'PICK UP AIRPORT' }}
+              </label>
+              <div class="input-group position-relative">
+                <input type="text" class="form-control" id="dropLocation" formControlName="dropLocation"
+                  placeholder="Start typing airport name or city" (focus)="showDropLocationDropdown = true"
+                  (input)="filterDropLocations($event)" (blur)="hideDropdownWithDelay('dropLocation')"
+                  autocomplete="off" />
+                <!-- <span class="input-group-text">
+                  <i class="fas fa-plane"></i>
+                </span> -->
+                <div class="dropdown-menu show w-100" *ngIf="showDropLocationDropdown && filteredDropLocations.length"
+                  style="max-height: 250px; overflow-y: auto; z-index: 1000; position: absolute; top: 100%; left: 0;">
+                  <button type="button" class="dropdown-item" *ngFor="let airport of filteredDropLocations"
+                    (mousedown)="selectDropLocation(airport)">
+                    {{ airport.name }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-3 mb-2">
+              <label for="pickupAddress" class="form-label">
+                {{ bookingForm.get('airportTripType')?.value === 'dropToAirport' ? 'PICKUP ADDRESS' : 'DROP LOCATION' }}
+              </label>
+              <div class="input-group position-relative">
+                <input type="text" class="form-control" id="pickupAddress" formControlName="pickupAddress"
+                  placeholder="Start typing your address" (focus)="showPickupAddressDropdown = true"
+                  (input)="filterPickupAddresses($event)" (blur)="hideDropdownWithDelay('pickupAddress')"
+                  autocomplete="off" />
+                <!-- <span class="input-group-text">
+                  <i class="fas fa-map-marker-alt"></i>
+                </span> -->
+                <div class="dropdown-menu show w-100" *ngIf="showPickupAddressDropdown && filterPickupLocation.length"
+                  style="max-height: 260px; overflow-y: auto; z-index: 1000; position: absolute; top: 100%; left: 0;">
+                  <button type="button" class="dropdown-item" *ngFor="let address of filterPickupLocation"
+                    (mousedown)="selectPickupAddress(address)">
+                    {{ address.name }}, {{ address.state }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <label for="pickupDate" class="form-label">PICK UP DATE</label>
+              <input type="date" class="form-control" id="pickupDate" formControlName="pickupDate" />
+            </div>
+            <div class="col">
+              <label for="pickupTime" class="form-label">PICK UP TIME</label>
+              <select class="form-select" id="pickupTime" formControlName="pickupTime">
+                <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+              </select>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Pick Up Date -->
+        <div class="col" *ngIf="selectedTripType !== 'AIRPORT'">
+          <label for="pickupDate" class="form-label">PICK UP DATE</label>
+          <input type="date" class="form-control" id="pickupDate" formControlName="pickupDate" />
+        </div>
+
+        <!-- Return Date for Round Trip -->
+        <div class="col" *ngIf="selectedTripType === 'ROUND TRIP'">
+          <label for="returnDate" class="form-label">RETURN DATE</label>
+          <input type="date" class="form-control" id="returnDate" formControlName="returnDate" />
+        </div>
+
+        <!-- Pick Up Time -->
+        <div class="col" *ngIf="selectedTripType !== 'AIRPORT'">
+          <label for="pickupTime" class="form-label">PICK UP TIME</label>
+          <select class="form-select" id="pickupTime" formControlName="pickupTime">
+            <option *ngFor="let time of timeSlots" [value]="time">
+              {{ time }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Explore Button -->
+      <div class="text-center explore-btn-wrapper">
+        <button type="submit" class="btn btn-primary btn-sm explore-btn" [disabled]="!bookingForm.valid">
+          EXPLORE CABS
+        </button>
+      </div>
+    </form>
+
+    <!-- Rating Section remains unchanged -->
+    <div class="rating-section text-center mt-4 d-none">
+      <div class="rating-badge">
+        <p class="text-white mb-2">India's Top Rated Car Rental Service</p>
+        <div class="app-ratings d-flex justify-content-center gap-3">
+          <div class="app-store">
+            <img src="assets/images/app-store.png" alt="App Store" height="30" />
+            <div class="rating">
+              <span>⭐⭐⭐⭐⭐</span>
+              <small>(4.2k+ Reviews)</small>
+            </div>
+          </div>
+          <div class="google">
+            <img src="assets/images/google.png" alt="Google" height="30" />
+            <div class="rating">
+              <span>⭐⭐⭐⭐⭐</span>
+              <small>(6.1k+ Reviews)</small>
+            </div>
+          </div>
+          <div class="play-store">
+            <img src="assets/images/play-store.png" alt="Play Store" height="30" />
+            <div class="rating">
+              <span>⭐⭐⭐⭐⭐</span>
+              <small>(15.5k+ Reviews)</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile View -->
+  <div class="booking-card-mobile d-block d-lg-none p-3 rounded-4 shadow-lg bg-white">
+    <!-- Main Trip Types Tabs -->
+    <div class="main-trip-types d-flex justify-content-between mb-2">
+      <button type="button" class="btn trip-tab flex-fill" [class.active]="selectedMainType === 'OUTSTATION'"
+        (click)="selectMainType('OUTSTATION')">
+        OUTSTATION
+      </button>
+
+      <button type="button" class="btn trip-tab flex-fill" [class.active]="selectedMainType === 'LOCAL'"
+        (click)="selectMainType('LOCAL')">
+        LOCAL
+      </button>
+
+      <button type="button" class="btn trip-tab flex-fill" [class.active]="selectedMainType === 'AIRPORT'"
+        (click)="selectMainType('AIRPORT')">
+        AIRPORT
+      </button>
+    </div>
+
+    <div class="tab-underline mb-2">
+      <div class="underline" [ngStyle]="{
+          left: selectedMainType === 'OUTSTATION' ? '0%' : selectedMainType === 'LOCAL' ? '33.33%' : '66.66%'
+        }"></div>
+    </div>
+
+    <!-- Subtitle -->
+    <div class="subtitle text-center fw-bold text-secondary mb-3" *ngIf="selectedMainType === 'OUTSTATION'">
+      INDIA'S PREMIER INTERCITY CABS
+    </div>
+    <div class="subtitle text-center fw-bold text-secondary" *ngIf="selectedMainType === 'AIRPORT'">
+      RELIABLE AIRPORT PICKUPS & DROPS
+    </div>
+    <div class="subtitle text-center fw-bold text-secondary mb-3" *ngIf="selectedMainType === 'LOCAL'">
+      RELIABLE AIRPORT PICKUPS & DROPS
+    </div>
+
+    <!-- Sub Trip Types for Outstation -->
+    <div class="sub-trip-types d-flex justify-content-center mb-3" *ngIf="selectedMainType === 'OUTSTATION'">
+      <button type="button" class="btn btn-pill me-2" [class.active]="selectedSubType === 'ONE WAY'"
+        (click)="selectSubType('ONE WAY')">ONE WAY</button>
+      <button type="button" class="btn btn-pill" [class.active]="selectedSubType === 'ROUND TRIP'"
+        (click)="selectSubType('ROUND TRIP')">ROUND TRIP</button>
+    </div>
+
+    <!-- Mobile Booking Form -->
+    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="mobile-form">
+      <!-- OUTSTATION -->
+      <ng-container *ngIf="selectedMainType === 'OUTSTATION'">
+        <!-- FROM -->
+        <div class="form-group mb-3 position-relative">
+          <div class="row align-items-center">
+            
+            <!-- LABEL (col-3) -->
+            <div class="col-3">
+              <label class="form-label fw-semibold mb-0 text-uppercase small">
+                FROM
+              </label>
+            </div>
+        
+            <!-- INPUT (col-9) -->
+            <div class="col-9 position-relative">
+              <input
+                type="text"
+                class="form-control bottom-border-input"
+                formControlName="fromLocation"
+                placeholder="Enter Pickup Location"
+                (focus)="showFromDropdown = true"
+                (input)="filterFromCities($event)"
+                (blur)="hideDropdownWithDelay('from')"
+                autocomplete="off"
+              />
+              <!-- City Swap Button -->
+              <div class="mobile-swap-button ng-star-inserted">
+                <button type="button" class="btn btn-link" (click)="swapLocations()">
+                  <i class="fas fa-exchange-alt"></i>
+                </button>
+              </div>
+              <!-- DROPDOWN -->
+              <div class="dropdown-menu show w-100"
+                   *ngIf="showFromDropdown && filteredFromCities.length"
+                   style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                <button type="button"
+                        class="dropdown-item"
+                        *ngFor="let city of filteredFromCities"
+                        (mousedown)="selectFromCity(city)">
+                  {{ city.name }}, {{ city.state }}
+                </button>
+              </div>
+            </div>
+
+        
+          </div>
+        </div>
+
+        <!-- Centered Swap Button -->
+        <!-- <div class="d-flex justify-content-center">
+          <button type="button" class="btn swap-btn border-0 bg-white" (click)="swapLocations()" tabindex="-1"
+            aria-label="Swap locations">
+            <i class="fas fa-exchange-alt"></i>
+          </button>
+        </div> -->
+
+        <!-- TO -->
+        <div class="form-group mb-3 position-relative">
+            <div class="row align-item-center gx-2">
+               <div class="col-3">
+                  <label class="form-label fw-semibold mb-0 text-uppercase small mt-2">
+                    TO
+                  </label>
+               </div>
+                <div class="col-9 position-relative">
+                  <input
+                    type="text"
+                    class="form-control bottom-border-input"
+                    formControlName="toLocation"
+                    placeholder="Enter Drop Location"
+                    (focus)="showToDropdown = true"
+                    (input)="filterToCities($event)"
+                    (blur)="hideDropdownWithDelay('to')"
+                    autocomplete="off"
+                  />
+                
+                  <div class="dropdown-menu show w-100" *ngIf="showToDropdown && filteredToCities.length"
+                    style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                    <button type="button" class="dropdown-item" *ngFor="let city of filteredToCities"
+                      (mousedown)="selectToCity(city)">{{ city.name }}, {{ city.state }}</button>
+                  </div>
+                </div>
+             </div>
+        </div>
+
+        <!-- PICK UP DATE -->
+        <div class="form-group">
+          <div class="row align-items-center gx-2">
+            <div class="col-3">
+              <label class="mobile-label">PICK UP</label>
+            </div>
+            <div class="col-9">
+              <input type="date" class="form-control mobile-input" formControlName="pickupDate" />
+            </div>
+          </div>
+        </div>
+        <!-- PICK UP TIME -->
+        <div class="form-group">
+          <div class="row align-items-center gx-2">
+            <div class="col-3">
+              <label class="mobile-label">PICK UP At</label>
+            </div>
+            <div class="col-9">
+              <select class="form-control mobile-input" formControlName="pickupTime">
+                <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- RETURN DATE (Round Trip only) -->
+
+        <div class="form-group" *ngIf="selectedSubType === 'ROUND TRIP'">
+          <div class="row align-items-center gx-2">
+            <div class="col-3">
+              <label class="mobile-label">RETURN DATE</label>
+            </div>
+            <div class="col-9">
+              <input type="date" class="form-control mobile-input" formControlName="returnDate" />
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- LOCAL -->
+      <ng-container *ngIf="selectedMainType === 'LOCAL'">
+        <div class="form-group mb-3 position-relative">
+           <div class="row align-item-center">
+              <div class="col-3 position-relative">
+                <label class="form-label fw-semibold mb-0 mt-2 text-uppercase small">
+                  FROM
+                </label>
+              </div>
+              <div class="col-9 position-relative">
+                <input 
+                type="text" 
+                class="form-control bottom-border-input" 
+                formControlName="city"
+                 placeholder="Enter City"
+                (focus)="showLocalCityDropdown = true" 
+                (input)="filterLocalCities($event)"
+                (blur)="hideDropdownWithDelay('local')" 
+                autocomplete="off" />
+                <div class="dropdown-menu show w-100" *ngIf="showLocalCityDropdown && filteredLocalCities.length"
+                style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                <button type="button" class="dropdown-item" *ngFor="let city of filteredLocalCities"
+                (mousedown)="selectLocalCity(city)">{{ city.name }}, {{ city.state }}</button>
+              </div>
+              </div>
+
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="row align-items-center gx-2">
+            <div class="col-3">
+              <label class="mobile-label">PICK UP</label>
+            </div>
+            <div class="col-9">
+              <input type="date" class="form-control mobile-input" formControlName="pickupDate" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="row align-items-center gx-2">
+            <div class="col-3">
+              <label class="mobile-label">PICK UP At</label>
+            </div>
+            <div class="col-9">
+              <select class="form-control mobile-input" formControlName="pickupTime">
+                <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- AIRPORT -->
+      <ng-container *ngIf="selectedMainType === 'AIRPORT'">
+        <div class="airport-trip-types mb-3 d-flex justify-content-center">
+          <button type="button" class="btn btn-pill me-2"
+            [class.active]="bookingForm.get('airportTripType')?.value === 'dropToAirport'"
+            (click)="bookingForm.patchValue({ airportTripType: 'dropToAirport' })">DROP TO AIRPORT</button>
+          <button type="button" class="btn btn-pill"
+            [class.active]="bookingForm.get('airportTripType')?.value === 'pickFromAirport'"
+            (click)="bookingForm.patchValue({ airportTripType: 'pickFromAirport' })">PICKUP FROM AIRPORT</button>
+        </div>
+        <!-- PICKUP ADDRESS -->
+        <div class="form-group mb-4 position-relative">
+          <div class="row align-items-center">
+               <div class="col-3">
+                  <label class="form-label fw-semibold mb-0 text-uppercase small">
+                    {{ bookingForm.get('airportTripType')?.value === 'dropToAirport' ? 'PICKUP ADDRESS' : 'DROP LOCATION' }}
+                  </label>
+               </div>
+               <div class="col-9 position-relative">           
+                    <input type="text" class="form-control bottom-border-input" formControlName="pickupAddress"
+                      placeholder="Start typing your address" (focus)="showPickupAddressDropdown = true"
+                      (input)="filterPickupAddresses($event)" (blur)="hideDropdownWithDelay('pickupAddress')"
+                      autocomplete="off" />
+                  <div class="dropdown-menu show w-100" *ngIf="showPickupAddressDropdown && filterPickupLocation.length"
+                    style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                    <button type="button" class="dropdown-item" *ngFor="let address of filterPickupLocation"
+                      (mousedown)="selectPickupAddress(address)">{{ address.name }}, {{address.state}}</button>
+                  </div>
+               </div>
+           </div> 
+
+          
+        </div>
+        <!-- DROP AIRPORT -->
+        <div class="form-group mb-3 position-relative">
+            <div class="row align-items-center">
+                
+                <div class="col-12 position-relative">
+                  <label class="form-label fw-semibold mb-0 text-uppercase small">
+                    {{ bookingForm.get('airportTripType')?.value === 'dropToAirport' ? 'DROP AIRPORT' : 'PICK UP AIRPORT' }}
+                  </label>
+                    <input type="text" class="form-control bottom-border-input" formControlName="dropLocation"
+                    placeholder="Start typing airport name or city" (focus)="showDropLocationDropdown = true"
+                    (input)="filterDropLocations($event)" (blur)="hideDropdownWithDelay('dropLocation')" autocomplete="off" />
+                    <div class="dropdown-menu show w-100" *ngIf="showDropLocationDropdown && filteredDropLocations.length"
+                      style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                      <button type="button" class="dropdown-item" *ngFor="let airport of filteredDropLocations"
+                        (mousedown)="selectDropLocation(airport)">{{ airport.name }}</button>
+                    </div>
+                  </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+          <div class="row align-items-center gx-2">
+            <div class="col-3">
+              <label class="mobile-label">PICK UP</label>
+            </div>
+            <div class="col-9">
+              <input type="date" class="form-control mobile-input" formControlName="pickupDate" />
+            </div>
+          </div>
+        </div>
+        <!-- PICK UP TIME -->
+        <div class="form-group">
+          <div class="row align-items-center gx-2">
+            <div class="col-3">
+              <label class="mobile-label">PICK UP At</label>
+            </div>
+            <div class="col-9">
+              <select class="form-control mobile-input" formControlName="pickupTime">
+                <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <button type="submit" class="btn btn-primary py-2 mt-2"
+        style="background:#FF6B1A; border-radius:8px; font-weight:bold; font-size:1.1rem;"
+        [disabled]="!bookingForm.valid">EXPLORE CABS</button>
+    </form>
+
+    <!-- Mobile Rating Section -->
+    <div class="mobile-rating-section d-none">
+      <p class="text-center text-white">India's Top Rated Car Rental Service</p>
+      <div class="mobile-ratings">
+        <div class="rating-item">
+          <img src="assets/images/app-store.png" alt="App Store" />
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <small>(4.2k+ Reviews)</small>
+        </div>
+        <div class="rating-item">
+          <img src="assets/images/google.png" alt="Google" />
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <small>(6.1k+ Reviews)</small>
+        </div>
+        <div class="rating-item">
+          <img src="assets/images/play-store.png" alt="Play Store" />
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <small>(15.5k+ Reviews)</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

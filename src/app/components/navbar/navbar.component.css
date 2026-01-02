@@ -1,0 +1,90 @@
+
+.benefits {
+  background: linear-gradient(to bottom right, #eaf3ff, #ffffff);
+}
+
+input[type="tel"]::placeholder {
+  color: #ccc;
+}
+
+.country-phone-group .dropdown-toggle {
+  min-width: 90px;
+  justify-content: start;
+}
+
+@media (max-width: 576px) {
+  .country-phone-group {
+    flex-direction: column;
+  }
+  .country-phone-group .form-control {
+    margin-top: 0.5rem;
+  }
+   .modal-dialog {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* .phone-auth-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+} */
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+}
+
+.country-code {
+  flex: 0 0 100px;
+  margin-right: 10px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.btn {
+  /* padding: 0.5rem 1rem; */
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.otp-input-section {
+  text-align: center;
+}
+
+.slide-text {
+  white-space: nowrap;
+  display: inline-block;
+  position: absolute;
+  left: 100%;
+  animation: slide-left 10s linear infinite;
+  font-weight: 500;
+  color: #1ca9e1;
+  font-size: 1rem;
+}
+@keyframes slide-left {
+  0% {
+    left: 100%;
+  }
+  100% {
+    left: -100%;
+  }
+}

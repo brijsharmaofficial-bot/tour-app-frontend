@@ -1,0 +1,346 @@
+/* payment-details.component.css */
+:host {
+  display: block;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Sticky summary */
+.sticky-top {
+  z-index: 1020;
+}
+
+/* Payment Option Cards */
+.payment-option-card {
+  position: relative;
+}
+
+.payment-radio {
+  position: absolute;
+  opacity: 0;
+}
+
+.payment-label {
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.payment-radio:checked + .payment-label {
+  border-color: #007bff;
+  background-color: #f8f9ff;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15);
+}
+
+.payment-radio:checked + .payment-label .payment-amount {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.payment-content {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.payment-amount {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.payment-percent {
+  font-weight: 600;
+}
+
+.payment-later {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Hover effects */
+.payment-label:hover {
+  border-color: #007bff;
+  transform: translateY(-2px);
+}
+
+/* Form controls */
+.form-control:focus,
+.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Button styles */
+.btn-primary {
+  background: linear-gradient(135deg, #ff7716 0%, #2b75ed 100%);
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Alert styles */
+.alert-info {
+  background-color: #e7f3ff;
+  border: 1px solid #b6d7ff;
+  border-radius: 8px;
+}
+
+/* Navigation pills */
+.nav-pills .nav-link {
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+  color: #6c757d;
+}
+
+.nav-pills .nav-link.active {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.nav-pills .nav-link:not(.active):hover {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+/* Card styles */
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .payment-content {
+    min-height: 100px;
+    padding: 1rem !important;
+  }
+  
+  .payment-amount {
+    font-size: 1.125rem;
+  }
+  
+  .container-fluid {
+    padding: 1rem;
+  }
+}
+
+/* Material icons */
+.material-icons-outlined {
+  font-size: 1.25rem;
+}
+
+/* Background opacity utilities */
+.bg-opacity-10 {
+  background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+}
+
+/* Loading state */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Security banner */
+.card-body img {
+  filter: grayscale(100%);
+  opacity: 0.8;
+}
+
+/* payment-details.component.css */
+/* ... existing styles ... */
+
+/* Dynamic tab content animations */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Content icon colors based on tab type */
+.icon-inclusions {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.icon-exclusions {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.icon-facilities {
+  background-color: rgba(23, 162, 184, 0.1);
+  color: #17a2b8;
+}
+
+.icon-tc {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+/* Tab navigation responsive */
+@media (max-width: 576px) {
+  .nav-pills .nav-link {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  
+  .material-icons-outlined.fs-6 {
+    font-size: 1rem;
+  }
+}
+
+/* Smooth transitions for tab content */
+.tab-content {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Content icon styling */
+[class*="icon-"] {
+  border-radius: 50%;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+}
+
+
+/* payment-details.component.css */
+
+/* Tab Buttons */
+.tab-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tab-buttons .nav-link {
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  border: 1px solid #dee2e6;
+  background: white;
+  color: #6c757d;
+  transition: all 0.3s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.tab-buttons .nav-link.active {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.tab-buttons .nav-link:not(.active):hover {
+  background-color: #f8f9fa;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+/* Tab Content */
+.tab-content {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.content-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.content-item:last-child {
+  border-bottom: none;
+}
+
+/* Icon Container */
+.icon-container {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+/* Icon Colors based on tab */
+.icon-inclusions {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.icon-exclusions {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.icon-facilities {
+  background-color: rgba(23, 162, 184, 0.1);
+  color: #17a2b8;
+}
+
+.icon-tc {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tab-buttons .nav-link {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  
+  .icon-container {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .material-icons-outlined {
+    font-size: 1rem;
+  }
+}
+

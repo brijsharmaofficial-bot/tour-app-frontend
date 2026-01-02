@@ -1,0 +1,21 @@
+<div class="modal fade" id="bookingModal" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false">
+  <div class="modal-dialog modal-fullscreen-sm-down modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header" >
+        <!-- <h5 class="modal-title">Modify Booking</h5> -->
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- 🔥 CENTERED BODY -->
+      <div class="modal-body p-0 modal-center-body">
+        <app-booking-form
+          [prefillData]="prefillData"
+          [isModal]="true"
+          (formSubmitted)="onFormSubmit($event)">
+        </app-booking-form>
+      </div>
+
+    </div>
+  </div>
+</div>

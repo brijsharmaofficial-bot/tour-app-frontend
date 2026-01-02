@@ -1,0 +1,66 @@
+.booking-section {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+              url('/assets/images/booking-bg.jpg') no-repeat center center;
+  background-size: cover;
+  padding: 3rem 1rem;
+}
+
+.booking-card {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.trip-types {
+  .btn {
+    margin-right: 10px;
+    padding: 8px 20px;
+    
+    &.active {
+      background-color: #17a2b8;
+      border-color: #17a2b8;
+    }
+  }
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background-color: #ff6b00;
+  border-color: #ff6b00;
+  
+  &:hover {
+    background-color: #e65c00;
+    border-color: #e65c00;
+  }
+}
+
+.rating-section {
+  .rating-badge {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+
+  .app-ratings {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+
+    .rating {
+      margin-top: 5px;
+      
+      span {
+        color: #ffd700;
+      }
+
+      small {
+        color: #666;
+        display: block;
+      }
+    }
+  }
+}

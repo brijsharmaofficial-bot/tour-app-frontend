@@ -1,0 +1,300 @@
+<app-navbar />
+<div class="container py-3 py-md-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xxl-10">
+      <div class="row g-3 g-md-4">
+        
+        <!-- LEFT SECTION - Contact & Pickup Details -->
+        <div class="col-12 col-lg-8 order-1 order-lg-1">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+              <h2 class="h5 h4-md mb-0 text-dark fw-semibold d-flex align-items-center">
+                <span class="material-icons-outlined me-2 fs-6 fs-md-5">manage_accounts</span>
+                   Contact & Pickup Details
+              </h2>
+            </div>
+
+            <div class="card-body p-3">
+              <div *ngIf="isLoggedIn" class="alert alert-primary mb-3">
+                <strong>Logged in:</strong> {{ loggedUser.name }} ({{ loggedUser.email }})
+              </div>
+              <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+                  <!-- FULL NAME -->
+                  <div class="row mb-2" *ngIf="!isLoggedIn">
+                    <div class="col-12 col-lg-6">
+                      <label class="form-label fw-semibold text-dark small small-md medium-lg">Full Name</label>
+                      <div class="input-group input-group-lg">
+                        <input type="text" formControlName="name" placeholder="Enter your full name"
+                          class="form-control py-2 py-md-2"
+                          [class.is-invalid]="isFieldInvalid('name')">
+                      </div>
+                      <div class="invalid-feedback d-block mt-1" *ngIf="isFieldInvalid('name')">
+                        <span class="material-icons-outlined me-1 align-middle fs-6">error</span>
+                        Please enter your name
+                      </div>
+                    </div>
+                     <!-- MOBILE -->
+                    <div class="col-12 col-lg-6">
+                      <label class="form-label fw-semibold text-dark small small-md">Mobile Number</label>
+                      <div class="input-group input-group-lg">
+                        <select class="form-select flex-grow-0 w-auto" formControlName="countryCode"
+                          style="max-width: 140px;">
+                          <option value="+91">+91</option>             
+                        </select>
+            
+                        <input type="tel" formControlName="mobile" placeholder="Enter your phone number"
+                          class="form-control py-2 py-md-2"
+                          [class.is-invalid]="isFieldInvalid('mobile')">
+                      </div>
+            
+                      <div class="invalid-feedback d-block mt-1" *ngIf="bookingForm.get('mobile')?.errors?.['required'] && bookingForm.get('mobile')?.touched">
+                        <span class="material-icons-outlined me-1 align-middle fs-6">error</span>
+                        Please enter your mobile number
+                      </div>
+            
+                      <div class="invalid-feedback d-block mt-1" *ngIf="bookingForm.get('mobile')?.errors?.['pattern'] && bookingForm.get('mobile')?.touched">
+                        <span class="material-icons-outlined me-1 align-middle fs-6">error</span>
+                        Please enter a valid 10-digit number
+                      </div>
+                    </div>
+                  </div>
+                
+                 <div class="row mb-2">      
+                          <!-- Email -->
+                    <div class="col-12 col-lg-6" *ngIf="!isLoggedIn">
+                      <label class="form-label fw-semibold text-dark small small-md">Email Address</label>
+                      <div class="input-group input-group-lg mb-2">
+                        <input type="email" formControlName="email" placeholder="Enter your email address"
+                          class="form-control py-2 py-md-2"
+                          [class.is-invalid]="isFieldInvalid('email')">
+                      </div>
+                      
+                      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                        <div class="flex-grow-1">
+                          <div class="invalid-feedback d-block mt-1" *ngIf="bookingForm.get('email')?.errors?.['required'] && bookingForm.get('email')?.touched">
+                            <span class="material-icons-outlined me-1 align-middle fs-6">error</span>Please enter your email
+                          </div>
+                          <div class="invalid-feedback d-block mt-1" *ngIf="bookingForm.get('email')?.errors?.['email'] && bookingForm.get('email')?.touched">
+                            <span class="material-icons-outlined me-1 align-middle fs-6">error</span>Please enter a valid email
+                          </div>
+                        </div>
+                        
+                      </div>
+                    </div>
+     
+                 </div>
+                
+                <!-- PICKUP LOCATION -->
+                <div class="row mb-2">
+                  <div class="col-12 col-lg-12">
+                    <label class="form-label fw-semibold text-dark small small-md">Pickup Location</label>
+          
+                    <div class="position-relative">
+                      <div class="input-group input-group-lg">
+                        <input type="text" id="pickup" formControlName="pickup"
+                          placeholder="Enter pickup location or landmark"
+                          (input)="onPickupInput($event)"
+                          class="form-control py-2 py-md-2"
+                          [class.is-invalid]="isFieldInvalid('pickup')">
+                      </div>                 
+                    </div>
+          
+                    <div class="invalid-feedback d-block mt-1" *ngIf="isFieldInvalid('pickup')">
+                      <span class="material-icons-outlined me-1 align-middle fs-6">error</span>
+                      Please enter pickup location
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- DROP LOCATION -->
+                <div class="row mb-2">
+                  <div class="col-12 col-lg-12">
+                    <label class="form-label fw-semibold text-dark small small-md">Drop Location</label>
+                    <div class="input-group input-group-lg">
+                      <input type="text" id="drop" formControlName="drop"
+                        placeholder="Enter drop location or landmark"
+                        (input)="onDropInput($event)"
+                        class="form-control py-2 py-md-2"
+                        [class.is-invalid]="isFieldInvalid('drop')">
+                    </div>
+          
+                    <div class="invalid-feedback d-block mt-1" *ngIf="isFieldInvalid('drop')">
+                      <span class="material-icons-outlined me-1 align-middle fs-6">error</span>
+                      Please enter drop location
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- SUBMIT BUTTON - Full Width -->
+                <div class="row mt-3 mt-md-5">
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-semibold d-flex align-items-center justify-content-center"
+                      [disabled]="bookingForm.invalid">
+                      <span class="material-icons-outlined me-2 fs-6 fs-md-5">credit_card</span>
+                      <span class="fs-6 fs-md-5">PROCEED TO PAYMENT</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Section - Booking Summary -->
+        <div class="col-12 col-lg-4 order-2 order-lg-2">
+          <div class="card border-0 shadow-sm sticky-summary">
+            <div class="card-header bg-dark text-white py-3">
+              <h2 class="h5 h4-md mb-0 fw-semibold d-flex align-items-center">
+                <span class="material-icons-outlined me-2 fs-6 fs-md-5">receipt_long</span>
+                BOOKING SUMMARY
+              </h2>
+            </div>
+
+            <div class="card-body p-0">
+              <!-- Itinerary Section -->
+              <div class="p-3 p-md-4 border-bottom">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3 flex-shrink-0">
+                    <span class="material-icons-outlined text-primary fs-6">location_on</span>
+                  </div>
+                  <div class="flex-grow-1 min-w-0">
+                    <div class="fw-semibold text-dark small">Itinerary</div>
+                    <div class="text-muted small">
+                        @if(selectedCar?.trip_type ==='local'){
+                            {{bookingData?.city}}
+                        }
+
+                        @if(selectedCar?.trip_type ==='airport'){
+                          <span *ngIf="bookingData?.airportTripType === 'dropToAirport'">
+                            Drop ({{ bookingData?.dropLocation }} - {{bookingData?.pickupAddress}})
+                          </span>
+                          
+                          <span *ngIf="bookingData?.airportTripType === 'pickFromAirport'">
+                            Pickup ({{ bookingData?.dropLocation }} - {{bookingData?.pickupAddress}} )
+                          </span>  
+                        }
+                        @if(selectedCar?.trip_type ==='oneway'){
+                          {{bookingData?.fromLocation}} → {{bookingData?.toLocation}}
+                        }
+                        
+                        @if(selectedCar?.trip_type ==='roundtrip'){
+                          {{bookingData?.fromLocation}} → {{bookingData?.toLocation}}
+                        }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center mb-3">
+                  <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3 flex-shrink-0">
+                    <span class="material-icons-outlined text-success fs-6">event</span>
+                  </div>
+                  <div class="flex-grow-1 min-w-0">
+                    <div class="fw-semibold text-dark small">Pickup Date & Time</div>
+                    <div class="text-muted small">{{bookingData?.pickupDate}} at {{bookingData?.pickupTime}}</div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center">
+                  <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3 flex-shrink-0">
+                    <span class="material-icons-outlined text-info fs-6">directions_car</span>
+                  </div>
+                  <div class="flex-grow-1 min-w-0">
+                    <div class="fw-semibold text-dark small">Car Type</div>
+                    <div class="text-muted small">{{selectedCar?.cab_name}} or Equivalent</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fare Details -->
+              <div class="p-3 p-md-4 border-bottom">
+                <h6 class="fw-semibold text-dark mb-3 small">Fare Details</h6>
+                
+                <div class="d-flex justify-content-between align-items-center mb-2">
+
+                  @if(selectedCar?.trip_type ==='local'){
+                    <span class="text-muted">Packages</span>
+                    <span class="fw-semibold">{{selectedCar?.hours }} hr | {{selectedCar?.included_km }} kms</span>
+                 }@else{
+                   <span class="text-muted">Distance Included</span>
+                   <span class="fw-semibold small">{{ selectedCar?.distance_km }} km</span>
+                 }
+                  
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-muted small">Base Fare</span>
+                  <span class="fw-semibold small">₹ {{getPriceWithoutGst()}}</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2 d-none">
+                  <span class="text-muted small">Driver Allowance</span>
+                  <span class="fw-semibold small">₹ {{selectedCar?.da}}</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2 d-none">
+                  <span class="text-muted small">Toll & Taxes</span>
+                  <span class="fw-semibold small">₹ {{selectedCar?.toll_tax}}</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-muted small">GST ({{selectedCar?.gst}}%)</span>
+                  <span class="fw-semibold small">₹ {{selectedCar?.gst_amount}}</span>
+                </div>
+
+                <hr class="my-2">
+
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bold text-dark">Total Amount</span>
+                  <span class="h5 text-primary fw-bold mb-0">₹ {{selectedCar?.final_fare}}</span>
+                </div>
+              </div>
+
+              <!-- Dynamic Tabs -->
+              <div class="p-3 bg-light">
+                <div class="tab-buttons nav nav-pills nav-justified">
+                  <button class="nav-link small fw-semibold" 
+                          [class.active]="selectedCar?.activeTab === 'inclusions'" 
+                          (click)="setActiveTab(selectedCar!, 'inclusions')">
+                    {{getTabText('inclusions')}}
+                  </button>
+                  <button class="nav-link small fw-semibold" 
+                          [class.active]="selectedCar?.activeTab === 'exclusions'" 
+                          (click)="setActiveTab(selectedCar!, 'exclusions')">
+                    {{getTabText('exclusions')}}
+                  </button>
+                  <button class="nav-link small fw-semibold" 
+                          [class.active]="selectedCar?.activeTab === 'facilities'" 
+                          (click)="setActiveTab(selectedCar!, 'facilities')">
+                    {{getTabText('facilities')}}
+                  </button>
+                  <button class="nav-link small fw-semibold" 
+                          [class.active]="selectedCar?.activeTab === 'tc'" 
+                          (click)="setActiveTab(selectedCar!, 'tc')">
+                    {{getTabText('tc')}}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tab Content -->
+              <div class="tab-content p-3 p-md-4" *ngIf="selectedCar?.showDetails">
+                <div class="content-item d-flex align-items-center mb-3" 
+                    *ngFor="let item of getTabContent(selectedCar!)">
+                  <div class="icon-container me-3 flex-shrink-0" [ngClass]="getIconColorClass(selectedCar!.activeTab)">
+                    <span class="material-icons-outlined">{{item.icon}}</span>
+                  </div>
+                  <span class="small flex-grow-1">{{item.text}}</span>
+                </div>
+                
+                <!-- Empty State -->
+                <div *ngIf="getTabContent(selectedCar!).length === 0" class="text-center text-muted py-3">
+                  <span class="material-icons-outlined mb-2">info</span>
+                  <p class="small mb-0">No information available for this section</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,417 @@
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, FormsModule],
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.css']
+})
+export class NavbarComponent {
+  loginForm!: FormGroup;
+  registerForm!: FormGroup;
+  showRegister = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+
+    this.registerForm = this.fb.group({
+      name: ['', Validators.required],
+      number: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
+
+  // Toggle between login and register forms
+  toggleRegister(event: Event) {
+    event.preventDefault();
+    this.showRegister = !this.showRegister;
+    this.loginForm.reset();
+    this.registerForm.reset();
+  }
+
+  onLogin() {
+    if (this.loginForm.valid) {
+      this.http.post<any>('http://127.0.0.1:8000/api/login', this.loginForm.value)
+        .subscribe({
+          next: (response) => {
+            localStorage.setItem('access_token', response.access_token);
+            localStorage.setItem('user', JSON.stringify(response.user));
+            // Close Bootstrap modal
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+              (window as any).bootstrap.Modal.getInstance(modal)?.hide();
+            }
+            this.router.navigate(['/user-profile']);
+          },
+          error: (error) => {
+            console.error('Login failed', error);
+            alert('Login failed. Please check your credentials.');
+          }
+        });
+    } else {
+      alert('Please fill in all required fields correctly.');
+    }
+  }
+
+  onRegister() {
+    if (this.registerForm.valid) {
+      this.http.post<any>('http://127.0.0.1:8000/api/register', this.registerForm.value)
+        .subscribe({
+          next: (response) => {
+            alert('Registration successful! Please login.');
+            this.registerForm.reset();
+            this.showRegister = false;
+          },
+          error: (error) => {
+            console.error('Registration failed', error);
+            alert('Registration failed. Please try again.');
+          }
+        });
+    } else {
+      alert('Please fill in all required fields correctly.');
+    }
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('access_token');
+  }
+
+  getUserName(): string | null {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user).name : null;
+  }
+
+  logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+    this.router.navigate(['/']);
+  }
+}
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+   <!-- left to right auto slide text  -->
+    <!-- <div class="mx-auto w-100 d-block d-lg-none" style="max-width:400px;">
+      <div class="overflow-hidden position-relative" style="height: 28px;">
+        <div class="slide-text px-2">
+          <span>
+            🚗 Book your ride now and get 12% OFF! | 24/7 Service | Safe & Reliable
+          </span>
+        </div>
+      </div>
+    </div> -->
+  <div class="container-fluid">
+
+    <!-- Logo -->
+    <a class="navbar-brand" href="/">
+      <img src="assets/images/logo.png" alt="Car Rental Kolkata Logo" height="40">
+    </a>
+
+    <!-- Mobile Toggle -->
+    <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button> -->
+
+    <!-- Navigation Links -->
+    <div class="collapse navbar-collapse d-none d-lg-block" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/about-us">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog">Blog</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/app">Download App</a>
+        </li>
+      </ul>
+      <!-- left to right auto slide text  -->
+      <div class="mx-auto w-100" style="max-width:400px;">
+        <div class="overflow-hidden position-relative" style="height: 28px;">
+          <div class="slide-text px-2">
+            <span>
+              🚗 Book your ride now and get 12% OFF! | 24/7 Service | Safe & Reliable | Call: +91 9073740000
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- Contact & Auth -->
+      <div class="d-flex align-items-center">
+        <div class="me-4 text-end">
+          <small class="text-muted d-block">24/7 Customer Support</small>
+          <strong class="text-primary">+91 9073740000</strong>
+        </div>
+        <!-- Show Sign In if not logged in -->
+        <ng-container *ngIf="!isLoggedIn(); else profileDropdown">
+          <a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Sign In</a>
+        </ng-container>
+        <!-- Show Profile Dropdown if logged in -->
+        <ng-template #profileDropdown>
+          <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileMenu"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle"></i> {{ getUserName() || 'Profile' }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+              <li><a class="dropdown-item" [routerLink]="['/user-profile']">Profile</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="#" (click)="logout()">Logout</a></li>
+            </ul>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+     <!-- Contact & Auth -->
+      <div class="d-flex align-items-center d-block d-lg-none">
+        <div class="me-4 text-end">
+          <small class="text-muted d-block">24/7 Customer Support</small>
+          <strong class="text-primary">+91 9073740000</strong>
+        </div>
+        <!-- Show Sign In if not logged in -->
+        <ng-container *ngIf="!isLoggedIn(); else profileDropdown">
+          <a class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">Sign In</a>
+        </ng-container>
+        <!-- Show Profile Dropdown if logged in -->
+        <ng-template #profileDropdown>
+          <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileMenu"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle"></i> {{ getUserName() || 'Profile' }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+              <li><a class="dropdown-item" [routerLink]="['/user-profile']">Profile</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="#" (click)="logout()">Logout</a></li>
+            </ul>
+          </div>
+        </ng-template>
+      </div>
+  </div>
+</nav>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered"> <!-- Use modal-xl for extra large modal -->
+    <div class="modal-content">
+
+      <div class="modal-body p-0">
+        <div class="otp-wrapper">
+          <div class="row shadow-lg rounded-4 overflow-hidden">
+              <!-- Left Panel -->
+            <div class="col-md-6 benefits px-4 py-4 d-none d-sm-block">
+              <h6 class="fw-bold text-uppercase text-secondary mb-4">Unlock These Benefits</h6>
+              <ul class="list-unstyled">
+                <li class="mb-3">
+                  <h6 class="fw-semibold text-dark">🎁 Earn goCash</h6>
+                  <small class="text-muted">Earn 100 goCash on Sign Up & Cashback on Bookings</small>
+                </li>
+                <li class="mb-3">
+                  <h6 class="fw-semibold text-dark">🏆 Loyalty Benefits</h6>
+                  <small class="text-muted">Extra Discounts, Free Seat Selection etc.</small>
+                </li>
+                <li class="mb-3">
+                  <h6 class="fw-semibold text-dark">💥 Exclusive Offers</h6>
+                  <small class="text-muted">Daily Steal Deals & Special Discounts</small>
+                </li>
+                <li class="bg-light p-3 rounded mt-3">
+                  <strong class="text-primary">FLAT 12% OFF*</strong><br />
+                  <small>Use Coupon: <span class="fw-bold">CARRENTALKOLKATA</span></small>
+                </li>
+              </ul>
+            </div>
+             <!-- Right Panel -->
+            <div class="col-md-6 p-4 bg-white ">
+              <button type="button" class="btn-close position-absolute end-0 m-0" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+              <h5 class="fw-bold mb-3" *ngIf="!showRegister">Login</h5>
+              <h5 class="fw-bold mb-3" *ngIf="showRegister">Register</h5>
+              
+              <!-- Login Form -->
+              <form *ngIf="!showRegister" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+                <div class="form-group mb-3">
+                  <label for="loginEmail">Email</label>
+                  <input type="email" id="loginEmail" formControlName="email" class="form-control" placeholder="Enter email">
+                  <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-message">
+                    Please enter a valid email
+                  </div>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="loginPassword">Password</label>
+                  <input type="password" id="loginPassword" formControlName="password" class="form-control" placeholder="Enter password">
+                  <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
+                    Password is required
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid">
+                  Login
+                </button>
+                <div class="text-center mt-3">
+                  <span>Don't have an account? <a href="#" (click)="toggleRegister($event)">Register</a></span>
+                </div>
+              </form>
+
+              <!-- Register Form -->
+              <form *ngIf="showRegister" [formGroup]="registerForm" (ngSubmit)="onRegister()">
+                <div class="form-group mb-3">
+                  <label for="registerName">Name</label>
+                  <input type="text" id="registerName" formControlName="name" class="form-control" placeholder="Enter your name">
+                  <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="error-message">
+                    Name is required
+                  </div>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="registerPhone">Phone</label>
+                  <input type="tel" id="registerPhone" formControlName="number" class="form-control" placeholder="Enter phone number">
+                  <div *ngIf="registerForm.get('number')?.invalid && registerForm.get('number')?.touched" class="error-message">
+                    Please enter a valid 10-digit phone number
+                  </div>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="registerEmail">Email</label>
+                  <input type="email" id="registerEmail" formControlName="email" class="form-control" placeholder="Enter email">
+                  <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error-message">
+                    Please enter a valid email
+                  </div>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="registerPassword">Password</label>
+                  <input type="password" id="registerPassword" formControlName="password" class="form-control" placeholder="Enter password">
+                  <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
+                    Password is required
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">
+                  Register
+                </button>
+                <div class="text-center mt-3">
+                  <span>Already have an account? <a href="#" (click)="toggleRegister($event)">Login</a></span>
+                </div>
+              </form>
+
+              <p class="text-muted small mt-3">
+                By proceeding, you agree to our <a href="#">Privacy Policy</a>, <a href="#">User Agreement</a> and
+                <a href="#">Terms of Service</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+.benefits {
+  background: linear-gradient(to bottom right, #eaf3ff, #ffffff);
+}
+
+input[type="tel"]::placeholder {
+  color: #ccc;
+}
+
+.country-phone-group .dropdown-toggle {
+  min-width: 90px;
+  justify-content: start;
+}
+
+@media (max-width: 576px) {
+  .country-phone-group {
+    flex-direction: column;
+  }
+  .country-phone-group .form-control {
+    margin-top: 0.5rem;
+  }
+   .modal-dialog {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* .phone-auth-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+} */
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+}
+
+.country-code {
+  flex: 0 0 100px;
+  margin-right: 10px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.btn {
+  /* padding: 0.5rem 1rem; */
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.otp-input-section {
+  text-align: center;
+}
+
+.slide-text {
+  white-space: nowrap;
+  display: inline-block;
+  position: absolute;
+  left: 100%;
+  animation: slide-left 10s linear infinite;
+  font-weight: 500;
+  color: #1ca9e1;
+  font-size: 1rem;
+}
+@keyframes slide-left {
+  0% {
+    left: 100%;
+  }
+  100% {
+    left: -100%;
+  }
+}

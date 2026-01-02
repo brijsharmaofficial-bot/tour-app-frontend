@@ -1,0 +1,265 @@
+/* booking-confirmation.component.css */
+:host {
+  display: block;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Sticky summary for desktop */
+.sticky-summary {
+  position: sticky;
+  top: 1rem;
+  z-index: 1;
+}
+
+@media (max-width: 991.98px) {
+  .sticky-summary {
+    position: static;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Responsive typography */
+.small-md {
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .small-md {
+    font-size: 1rem;
+  }
+  
+  .h4-md {
+    font-size: 1.5rem;
+  }
+  
+  .fs-6-md {
+    font-size: 1rem;
+  }
+}
+
+/* Form controls responsive sizing */
+.input-group-lg .form-control,
+.input-group-lg .form-select {
+  /* padding: 0.75rem 2rem; */
+  font-size: 1rem;
+  border: 1px solid #5587eb !important;
+}
+
+@media (max-width: 767.98px) {
+  .input-group-lg .form-control,
+  .input-group-lg .form-select {
+    padding: 0.5rem 0.75rem;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Card responsive adjustments */
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+/* Button responsive styles */
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+@media (max-width: 767.98px) {
+  .btn-lg {
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* Navigation pills responsive */
+.nav-pills .nav-link {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .nav-pills .nav-link {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Material icons responsive */
+.material-icons-outlined {
+  font-size: 1.125rem;
+}
+
+@media (min-width: 768px) {
+  .material-icons-outlined {
+    font-size: 1.25rem;
+  }
+}
+
+.fs-6 {
+  font-size: 1rem;
+}
+
+/* Dropdown responsive styles */
+.dropdown-menu {
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1rem;
+}
+
+@media (max-width: 767.98px) {
+  .dropdown-item {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Utility classes for responsive spacing */
+.min-w-0 {
+  min-width: 0;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+/* Hover effects */
+.hover-bg:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+/* Focus states for accessibility */
+.form-control:focus,
+.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Loading state for submit button */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Animation for better UX */
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Mobile-first responsive grid adjustments */
+@media (max-width: 575.98px) {
+  .row.g-3 {
+    --bs-gutter-x: 0px;
+    --bs-gutter-y: 0px;
+  }
+  
+  .card-header {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Ensure proper text truncation */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Custom scrollbar for dropdown */
+.dropdown-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Print styles */
+@media print {
+  .btn, .nav-pills, .sticky-summary {
+    display: none !important;
+  }
+  
+  .card {
+    border: 1px solid #dee2e6 !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Additional responsive styles for 6-column layout */
+@media (min-width: 992px) {
+  .col-lg-6 {
+    /* padding-left: 1rem;
+    padding-right: 1rem; */
+  }
+  
+  /* Add some spacing between columns */
+  .col-lg-6:first-child {
+    /* border-right: 1px solid #e9ecef; */
+    /* padding-right: 2rem; */
+  }
+  
+  .col-lg-6:last-child {
+    /* padding-left: 2rem; */
+  }
+}
+
+/* Mobile view adjustments */
+@media (max-width: 991.98px) {
+  .col-lg-6 {
+    margin-bottom: 0.4rem;
+  }
+}
+
+/* Ensure consistent height for form groups */
+.form-group-equal {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Smooth transitions */
+.col-lg-6 {
+  transition: all 0.3s ease-in-out;
+}
+
+.addgst{
+   margin: 37px 0px 0px 0px;
+}
+@media (max-width: 768px) {
+  .addgst{
+    margin: 0px 0px;
+ }
+} 

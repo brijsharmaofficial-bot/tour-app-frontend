@@ -1,0 +1,467 @@
+<app-navbar></app-navbar>
+
+<!-- Desktop View -->
+<div class="container d-none d-md-block">
+  <div class="container">
+    <!-- Journey Header -->
+    <nav class="breadcrumb bg-light p-2">
+      <span>Home > Select Car</span>
+    </nav>
+    <div class="journey-details bg-light p-2 d-flex justify-content-between">
+      <div>
+        <h6 class="mb-0">{{bookingData?.fromLocation}} > {{bookingData?.toLocation}} (One way)</h6>
+      </div>
+      <div class="d-flex align-items-center">
+        <div class="me-3">
+          <span>Pick up</span>
+          <span class="ms-2">{{bookingData?.pickupDate}}</span>
+        </div>
+        <div class="me-3">
+          <span>Time</span>
+          <span class="ms-2">{{bookingData?.pickupTime}}</span>
+        </div> 
+        <button class="btn btn-link text-info p-0" (click)="openBookingForm()">Modify</button>
+      </div>
+    </div>
+  
+    <!-- Promo Banner -->
+    <div class="promo-banner position-relative my-3">
+      <div class="d-flex justify-content-between align-items-center p-3" style="background: linear-gradient(90deg, #00a6e6 50%, #0077cc 100%);">
+        <h2 class="text-white mb-0">YOU HAVE UNLOCKED A SPECIAL DISCOUNT!</h2>
+        <h3 class="text-white mb-0">Book NOW for Lowest All-Inclusive Fares!</h3>
+      </div>
+    </div>
+  
+    <!-- Car List -->
+    <div class="car-list">
+      <div class="card mb-3" *ngFor="let car of carOptions">
+        <div class="card-body p-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center" style="width: 20%">
+              <img [src]="car.image" [alt]="car.name" style="width: 120px">
+              <div class="ms-3">
+                <h5 class="mb-1">{{car.name}}</h5>
+                <small class="text-muted" *ngIf="car.equivalent">or equivalent</small>
+              </div>
+            </div>
+            
+            <div class="text-center" style="width: 15%">
+              <img src="assets/images/icons/certified-chauffeurs.png" alt="Top Rated" style="width: 24px">
+              <div class="small mt-1">Top Rated Cabs & Chauffeurs</div>
+            </div>
+  
+            <div class="text-center" style="width: 15%">
+              <img src="assets/images/icons/inclusive-gst.png" alt="Tax" style="width: 24px">
+              <div class="small mt-1">Includes Toll, State Tax & GST</div>
+            </div>
+  
+            <div class="text-center" style="width: 10%">
+              <div class="text-success small">Save ₹{{car.savings}}</div>
+              <div class="text-decoration-line-through small">₹{{car.originalPrice}}</div>      
+            </div>
+  
+            <div class="text-center" style="width: 20%">     
+              <div class="h4 mb-0">₹{{car.price}}</div>
+              <small class="d-block">up to {{car.distance}} km</small>
+              <span class="badge bg-success mt-1" *ngIf="car.isLimitedOffer">LIMITED OFFER</span>
+            </div>
+  
+            <div style="width: 10%">
+              <button class="btn btn-primary w-100" (click)="selectCar(car)">Select</button>
+              <button class="btn btn-link w-100 small" (click)="showDetails(car)">Details</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Details Section -->
+        <div class="details-section" *ngIf="car.showDetails">
+          <!-- Tab Navigation -->
+          <div class="tab-navigation border-top">
+            <div class="nav nav-tabs border-0">
+              <button class="nav-link px-4" [class.active]="car.activeTab === 'inclusions'" (click)="setActiveTab(car, 'inclusions')">
+                INCLUSIONS
+              </button>
+              <button class="nav-link px-4" [class.active]="car.activeTab === 'exclusions'" (click)="setActiveTab(car, 'exclusions')">
+                EXCLUSIONS
+              </button>
+              <button class="nav-link px-4" [class.active]="car.activeTab === 'facilities'" (click)="setActiveTab(car, 'facilities')">
+                FACILITIES
+              </button>
+              <button class="nav-link px-4" [class.active]="car.activeTab === 'tc'" (click)="setActiveTab(car, 'tc')">
+                T&C
+              </button>
+            </div>
+          </div>
+  
+          <!-- Tab Content -->
+          <div class="tab-content p-4 bg-light">
+            <!-- Inclusions Tab -->
+            <div *ngIf="car.activeTab === 'inclusions'" class="d-flex flex-wrap gap-4">
+              <div class="d-flex align-items-center">
+                <img src="assets/images/icons/base-fare.png" alt="Base Fare" class="me-2" style="width: 24px">
+                <span>Base Fare for {{car.distance}} km</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <img src="assets/images/icons/driver.png" alt="Driver" class="me-2" style="width: 24px">
+                <span>Driver Allowance</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <img src="assets/images/icons/tax.png" alt="Tax" class="me-2" style="width: 24px">
+                <span>State Tax & Toll</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <img src="assets/images/icons/gst.png" alt="GST" class="me-2" style="width: 24px">
+                <span>GST (5%)</span>
+              </div>
+            </div>
+  
+            <!-- Exclusions Tab -->
+            <div *ngIf="car.activeTab === 'exclusions'" class="d-flex flex-wrap gap-4">
+              <div class="d-flex align-items-center">
+                <img src="assets/images/icons/fuel.png" alt="Fuel" class="me-2" style="width: 24px">
+                <span>Fuel charges</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <img src="assets/images/icons/parking.png" alt="Parking" class="me-2" style="width: 24px">
+                <span>Parking charges if any</span>
+              </div>
+            </div>
+  
+            <!-- Facilities Tab -->
+            <div *ngIf="car.activeTab === 'facilities'" class="d-flex flex-wrap gap-4">
+              <div class="d-flex align-items-center">
+                <img src="assets/images/icons/ac.png" alt="AC" class="me-2" style="width: 24px">
+                <span>Air Conditioned</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <img src="assets/images/icons/luggage.png" alt="Luggage" class="me-2" style="width: 24px">
+                <span>Luggage Space</span>
+              </div>
+            </div>
+  
+            <!-- T&C Tab -->
+            <div *ngIf="car.activeTab === 'tc'" class="terms-content">
+              <ul class="list-unstyled">
+                <li class="mb-2">• Toll charges included for one way only</li>
+                <li class="mb-2">• Additional charges may apply for extra kilometers</li>
+                <li class="mb-2">• Cancellation charges applicable as per policy</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mobile-container d-block d-md-none">
+  <!-- Journey Header -->
+  <div class="journey-header bg-light p-2 d-flex justify-content-between">
+    <div class="route-info">
+      <div>{{bookingData?.fromLocation}} - {{bookingData?.toLocation}}</div>
+      <div class="one-way">(One way)</div>
+    </div>
+    <div class="booking-details">
+      <div>
+        <span>Pick up Date</span>
+        <span class="ms-2">{{bookingData?.pickupDate}}</span>
+      </div>
+      <div>
+        <span>Time</span>
+        <span class="ms-2">{{bookingData?.pickupTime}}</span>
+      </div>
+      <a (click)="modifyBooking()" class="modify-link">Modify Booking</a>
+    </div>
+  </div>
+
+  <!-- Price Banner -->
+  <div class="price-banner">
+    PRICES ARE INCLUSIVE OF TOLL CHARGES & TAXES!
+  </div>
+
+  <!-- Car Type Selector -->
+  <div class="car-type-selector">
+    <div class="car-type" *ngFor="let type of carTypes" (click)="selectCarType(type)">
+      <div class="car-icon" [class.active]="selectedCarType?.id === type.id">
+        <img [src]="type.icon" [alt]="type.name">
+      </div>
+      <div class="price">₹{{type.price}}</div>
+    </div>
+  </div>
+
+  <!-- Car Cards -->
+  <div class="car-cards">
+    <div class="car-card" *ngFor="let car of filteredCarOptions">
+      <div class="car-header">
+        <h3>{{car.name}}</h3>
+        <span class="toll-badge">Tolls Included</span>
+      </div>
+      
+      <div class="car-content">
+        <div class="car-image">
+          <img [src]="car.image" [alt]="car.name">
+        </div>
+        <div class="price-details">
+          <div class="current-price">₹{{car.price}}</div>
+          <div class="original-price">₹{{car.originalPrice}}</div>
+          <div class="distance">for {{car.distance}} kms</div>
+          <div class="gst-text">Inclusive of GST</div>
+          <span class="limited-badge" *ngIf="car.isLimitedOffer">LIMITED OFFER</span>
+        </div>
+      </div>
+
+      <button class="select-btn" (click)="selectCar(car)">SELECT CAR</button>
+
+      <!-- Tabs -->
+      <div class="tab-buttons">
+        <button [class.active]="car.activeTab === 'inclusions'" (click)="setActiveTab(car, 'inclusions')">
+          INCLUSIONS
+        </button>
+        <button [class.active]="car.activeTab === 'exclusions'" (click)="setActiveTab(car, 'exclusions')">
+          EXCLUSIONS
+        </button>
+        <button [class.active]="car.activeTab === 'facilities'" (click)="setActiveTab(car, 'facilities')">
+          FACILITIES
+        </button>
+        <button [class.active]="car.activeTab === 'tc'" (click)="setActiveTab(car, 'tc')">
+          T&C
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content" *ngIf="car.showDetails">
+        <div class="content-item" *ngFor="let item of getTabContent(car)">
+          <img [src]="item.icon" [alt]="item.text">
+          <span>{{item.text}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BookingFormComponent } from '../../components/booking-form/booking-form.component';
+import { BookingFormModalComponent } from '../../booking-form-modal/booking-form-modal.component';
+import { CarService } from '../../services/car.service';
+
+interface CarType {
+  id: number;
+  name: string;
+  icon: string;
+  price: number;
+}
+
+interface CarOption {
+  id: number;
+  name: string;
+  image: string;
+  equivalent: boolean;
+  price: number;
+  originalPrice: number;
+  savings: number;
+  distance: number;
+  isLimitedOffer: boolean;
+  showDetails: boolean;
+  activeTab: 'inclusions' | 'exclusions' | 'facilities' | 'tc';
+}
+
+@Component({
+  selector: 'app-one-way',
+  standalone: true,
+  imports: [CommonModule,NgbModule,NavbarComponent],
+  templateUrl: './one-way.component.html',
+  styleUrl: './one-way.component.css'
+})
+export class OneWayComponent implements OnInit {
+  bookingData: any;
+  isLoading = false;
+  selectedCarType: CarType | null = null;
+  filteredCarOptions: CarOption[] = [];
+  carTypes: CarType[] = [
+    { id: 1, name: 'Hatchback', icon: 'assets/images/icons/hatchback.png', price: 1968 },
+    { id: 2, name: 'Sedan', icon: 'assets/images/icons/sedan.png', price: 2008 },
+    { id: 3, name: 'Ertiga', icon: 'assets/images/icons/ertiga.png', price: 3443 },
+    { id: 4, name: 'Innova', icon: 'assets/images/icons/innova.png', price: 4574 },
+    { id: 5, name: 'Crysta', icon: 'assets/images/icons/crysta.png', price: 5564 }
+  ];
+
+  carOptions: CarOption[] = [
+    {
+      id: 1,
+      name: 'Wagon R',
+      image: 'assets/images/car/Carrentalkolkata-Wagonr-Cab.jpg',
+      equivalent: true,
+      price: 1968,
+      originalPrice: 2074,
+      savings: 106,
+      distance: 145,
+      isLimitedOffer: true,
+      showDetails: false,
+      activeTab: 'inclusions'
+    },
+    {
+      id: 2,
+      name: 'Toyota Etios',
+      image: 'assets/images/car/Carrentalkolkata-Etios-Cab.jpg',
+      equivalent: true,
+      price: 2008,
+      originalPrice: 2116,
+      savings: 108,
+      distance: 145,
+      isLimitedOffer: true,
+      showDetails: false,
+      activeTab: 'inclusions'
+    },
+    {
+      id: 3,
+      name: 'Ertiga',
+      image: 'assets/images/car/Carrentalkolkata-Ertiga-Cab.jpg',
+      equivalent: true,
+      price: 3443,
+      originalPrice: 3188,
+      savings: 255,
+      distance: 145,
+      isLimitedOffer: true,
+      showDetails: false,
+      activeTab: 'inclusions'
+    },
+    {
+      id: 4,
+      name: 'Toyota Innova',
+      image: 'assets/images/car/Carrentalkolkata-Innova-Cab.jpg',
+      equivalent: true,
+      price: 4574,
+      originalPrice: 4574,
+      savings: 0,
+      distance: 145,
+      isLimitedOffer: false,
+      showDetails: false,
+      activeTab: 'inclusions'
+    }
+  ];
+
+  constructor(private router: Router,
+    private modalService: NgbModal,
+    private carservice: CarService
+  ) {
+    const navigation = this.router.getCurrentNavigation();
+    this.bookingData = navigation?.extras?.state?.['bookingData'];
+  }
+
+  ngOnInit(): void {
+    if (!this.bookingData) {
+      this.router.navigate(['/']);
+      return;
+    }
+    this.filteredCarOptions = [...this.carOptions];
+    this.selectCarType(this.carTypes[0]); // Default to the first car type
+
+      // Fetch car types
+    this.carservice.getCarTypes().subscribe(types => {
+      this.carTypes = types;
+      this.selectedCarType = this.carTypes[0];
+    });
+
+    // Fetch car options
+    this.carservice.getCarOptions().subscribe(options => {
+      this.carOptions = options;
+      this.filteredCarOptions = options;
+    });
+  }
+
+  selectCarType(type: CarType): void {
+    this.selectedCarType = type;
+    this.filteredCarOptions = this.carOptions.filter(car => car.price === type.price);
+  }
+  showDetails(car: CarOption): void {
+    car.showDetails = !car.showDetails;
+    if (car.showDetails && !car.activeTab) {
+      car.activeTab = 'inclusions';
+    }
+  }
+// Add error handling
+  private handleError(error: any): void {
+    console.error('An error occurred:', error);
+    // Implement error handling logic
+  }
+
+  async selectCar(car: CarOption): Promise<void> {
+    try {
+      this.isLoading = true;
+      await this.router.navigate(['/booking-info'], {
+        state: {
+          bookingData: this.bookingData,
+          selectedCar: car
+        }
+      });
+    } catch (error) {
+      this.handleError(error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  setActiveTab(car: CarOption, tab: 'inclusions' | 'exclusions' | 'facilities' | 'tc'): void {
+    car.activeTab = tab;
+    car.showDetails = true;
+  }
+
+  getTabContent(car: CarOption): { icon: string; text: string }[] {
+    const content = {
+      inclusions: [
+        { icon: 'assets/images/icons/base-fare.png', text: 'Base Fare and Fuel Charges' },
+        { icon: 'assets/images/icons/driver.png', text: 'Driver Allowance' },
+        { icon: 'assets/images/icons/tax.png', text: 'State Tax & Toll' },
+        { icon: 'assets/images/icons/gst.png', text: 'GST (5%)' }
+      ],
+      exclusions: [
+        { icon: 'assets/images/icons/fuel.png', text: 'Additional Fuel Charges' },
+        { icon: 'assets/images/icons/parking.png', text: 'Parking Charges' }
+      ],
+      facilities: [
+        { icon: 'assets/images/icons/ac.png', text: 'Air Conditioned' },
+        { icon: 'assets/images/icons/luggage.png', text: 'Luggage Space' }
+      ],
+      tc: []
+    };
+    return content[car.activeTab] || [];
+  }
+  
+  openBookingForm(): void {
+    const modalRef = this.modalService.open(BookingFormModalComponent, {
+    windowClass: 'no-fade',
+    size: 'lg',
+    centered: true,
+    backdrop: 'static',
+    keyboard: false
+  });
+  
+  // Pass a copy of the booking data to prevent direct mutation
+  modalRef.componentInstance.bookingData = { ...this.bookingData };
+  
+  modalRef.result.then(
+    (result) => {
+      if (result) {
+        // Update booking data and trigger any necessary updates
+        this.bookingData = { ...this.bookingData, ...result };
+        this.filteredCarOptions = [...this.carOptions]; // Reset car options if needed
+        console.log('Booking updated:', this.bookingData);
+      }
+    },
+    (reason) => {
+      console.log('Modal dismissed');
+    }
+  );
+}
+  modifyBooking(): void {
+   
+  }
+}

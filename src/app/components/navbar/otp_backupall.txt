@@ -1,0 +1,662 @@
+// navbar.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
+@Component({
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.css']
+})
+export class NavbarComponent implements OnInit, OnDestroy {
+  phoneForm!: FormGroup;
+  otpForm!: FormGroup;
+  showOtpSection = false;
+  phoneNumber = '';
+  countdown = 60;
+  countdownInterval: any;
+  isResendEnabled = false;
+  isLoading = false;
+  isDevelopment = !environment.production;
+  
+  private authSubscription!: Subscription;
+  isLoggedIn = false;
+  userPhone: string | null = null;
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.initForms();
+  }
+
+  ngOnInit(): void {
+    this.authSubscription = this.authService.user$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      this.userPhone = user?.phoneNumber || null;
+    });
+
+    if (this.isDevelopment) {
+      console.log('🎯 Development Mode Active - MSG91 Integration');
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
+    this.clearCountdown();
+  }
+
+  private initForms(): void {
+    this.phoneForm = this.fb.group({
+      phone: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]]
+    });
+
+    this.otpForm = this.fb.group({
+      otp: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
+    });
+  }
+
+  // Send OTP via MSG91
+  async sendOtp(): Promise<void> {
+    if (this.phoneForm.valid) {
+      this.isLoading = true;
+      this.phoneNumber = this.phoneForm.get('phone')?.value;
+      
+      try {
+        const result = await this.authService.sendOtp(this.phoneNumber);
+        
+        if (result.success) {
+          this.showOtpSection = true;
+          this.startCountdown();
+          
+          if (this.isDevelopment) {
+            console.log(`✅ OTP sent successfully to ${this.phoneNumber}`);
+          }
+        } else {
+          alert(result.message);
+        }
+      } catch (error: any) {
+        console.error('Error sending OTP:', error);
+        alert('Failed to send OTP. Please try again.');
+      } finally {
+        this.isLoading = false;
+      }
+    } else {
+      alert('Please enter a valid 10-digit phone number');
+    }
+  }
+
+  // Verify OTP
+  async verifyOtp(): Promise<void> {
+    if (this.otpForm.valid) {
+      this.isLoading = true;
+      const otp = this.otpForm.get('otp')?.value;
+      
+      try {
+        const result = await this.authService.verifyOtp(this.phoneNumber, otp);
+        
+        if (result.success) {
+          this.closeModal();
+          this.resetForms();
+          this.router.navigate(['/user-profile']);
+        } else {
+          alert(result.message);
+        }
+      } catch (error: any) {
+        console.error('OTP verification error:', error);
+        alert('OTP verification failed. Please try again.');
+      } finally {
+        this.isLoading = false;
+      }
+    } else {
+      alert('Please enter a valid 6-digit OTP');
+    }
+  }
+
+  // Resend OTP via MSG91
+  async resendOtp(): Promise<void> {
+    if (this.phoneNumber && this.isResendEnabled) {
+      this.isLoading = true;
+      
+      try {
+        const result = await this.authService.resendOtp(this.phoneNumber);
+        
+        if (result.success) {
+          this.startCountdown();
+          alert('OTP resent successfully!');
+        } else {
+          alert(result.message);
+        }
+      } catch (error: any) {
+        console.error('Error resending OTP:', error);
+        alert('Failed to resend OTP. Please try again.');
+      } finally {
+        this.isLoading = false;
+      }
+    }
+  }
+
+  // Start countdown for resend OTP
+  private startCountdown(): void {
+    this.countdown = 60;
+    this.isResendEnabled = false;
+    
+    this.clearCountdown();
+    
+    this.countdownInterval = setInterval(() => {
+      this.countdown--;
+      
+      if (this.countdown <= 0) {
+        this.isResendEnabled = true;
+        this.clearCountdown();
+      }
+    }, 1000);
+  }
+
+  private clearCountdown(): void {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
+  }
+
+  // Close modal and reset forms
+  closeModal(): void {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+      const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modal);
+      if (bootstrapModal) {
+        bootstrapModal.hide();
+      }
+    }
+    
+    this.resetForms();
+  }
+
+  // Reset all forms and states
+  resetForms(): void {
+    this.phoneForm.reset();
+    this.otpForm.reset();
+    this.showOtpSection = false;
+    this.phoneNumber = '';
+    this.isLoading = false;
+    this.clearCountdown();
+    this.isResendEnabled = false;
+  }
+
+  // Toggle between phone and OTP sections
+  backToPhone(): void {
+    this.showOtpSection = false;
+    this.otpForm.reset();
+  }
+
+  // Logout
+  logout(): void {
+    this.authService.logout();
+  }
+
+  // Format phone number for display
+  getFormattedPhone(): string {
+    if (!this.userPhone) return '';
+    return this.userPhone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+  }
+
+  // Check if user is logged in
+  isUserLoggedIn(): boolean {
+    return this.isLoggedIn;
+  }
+
+  // Get user name for display
+  getUserName(): string {
+    return this.getFormattedPhone() || 'Profile';
+  }
+}
+
+
+
+
+
+
+
+
+
+<!-- navbar.component.html -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container-fluid">
+    <!-- Logo -->
+    <a class="navbar-brand" href="/">
+      <img src="assets/images/logo.png" alt="Car Rental Kolkata Logo" height="40">
+    </a>
+
+    <!-- Navigation Links -->
+    <div class="collapse navbar-collapse d-none d-lg-block" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/about-us">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog">Blog</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/app">Download App</a>
+        </li>
+      </ul>
+      
+      <!-- left to right auto slide text  -->
+      <div class="mx-auto w-100" style="max-width:400px;">
+        <div class="overflow-hidden position-relative" style="height: 28px;">
+          <div class="slide-text px-2">
+            <span>
+              🚗 Book your ride now and get 12% OFF! | 24/7 Service | Safe & Reliable | Call: +91 9073740000
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contact & Auth -->
+      <div class="d-flex align-items-center">
+        <div class="me-4 text-end">
+          <small class="text-muted d-block">24/7 Customer Support</small>
+          <strong class="text-primary">+91 9073740000</strong>
+        </div>
+        
+        <!-- Show Sign In if not logged in -->
+        <ng-container *ngIf="!isUserLoggedIn(); else profileDropdown">
+          <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+            Sign In
+          </button>
+        </ng-container>
+        
+        <!-- Show Profile Dropdown if logged in -->
+        <ng-template #profileDropdown>
+          <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileMenu"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle me-1"></i>
+              {{ getUserName() }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+              <li><a class="dropdown-item" [routerLink]="['/user-profile']">Profile</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/booking-history']">My Bookings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#" (click)="logout(); $event.preventDefault()">Logout</a></li>
+            </ul>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Mobile View -->
+    <div class="d-flex align-items-center d-block d-lg-none">
+      <div class="me-3 text-end">
+        <small class="text-muted d-block" style="font-size: 0.7rem;">24/7 Support</small>
+        <strong class="text-primary" style="font-size: 0.8rem;">+91 9073740000</strong>
+      </div>
+      
+      <ng-container *ngIf="!isUserLoggedIn(); else mobileProfileDropdown">
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">
+          Sign In
+        </button>
+      </ng-container>
+      
+      <ng-template #mobileProfileDropdown>
+        <div class="dropdown">
+          <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="mobileProfileMenu"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileProfileMenu">
+            <li><a class="dropdown-item" [routerLink]="['/user-profile']">Profile</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/booking-history']">My Bookings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" (click)="logout(); $event.preventDefault()">Logout</a></li>
+          </ul>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</nav>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" 
+     (hidden.bs.modal)="resetForms()">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="otp-wrapper">
+          <div class="row shadow-lg rounded-4 overflow-hidden">
+            <!-- Left Panel - Benefits -->
+            <div class="col-md-6 benefits px-4 py-4 d-none d-sm-block">
+              <h6 class="fw-bold text-uppercase text-secondary mb-4">Unlock These Benefits</h6>
+              <ul class="list-unstyled">
+                <li class="mb-3">
+                  <h6 class="fw-semibold text-dark">🎁 Earn goCash</h6>
+                  <small class="text-muted">Earn 100 goCash on Sign Up & Cashback on Bookings</small>
+                </li>
+                <li class="mb-3">
+                  <h6 class="fw-semibold text-dark">🏆 Loyalty Benefits</h6>
+                  <small class="text-muted">Extra Discounts, Free Seat Selection etc.</small>
+                </li>
+                <li class="mb-3">
+                  <h6 class="fw-semibold text-dark">💥 Exclusive Offers</h6>
+                  <small class="text-muted">Daily Steal Deals & Special Discounts</small>
+                </li>
+                <li class="bg-light p-3 rounded mt-3">
+                  <strong class="text-primary">FLAT 12% OFF*</strong><br />
+                  <small>Use Coupon: <span class="fw-bold">CARRENTALKOLKATA</span></small>
+                </li>
+              </ul>
+            </div>
+            
+            <!-- Right Panel - OTP Login -->
+            <div class="col-md-6 p-4 bg-white position-relative">
+              <div id="recaptcha-container"></div>
+              <button type="button" class="btn-close position-absolute end-0 m-3" 
+                      data-bs-dismiss="modal" aria-label="Close"
+                      [disabled]="isLoading"></button>
+              
+              <h5 class="fw-bold mb-3">
+                {{ showOtpSection ? 'Verify OTP' : 'Login with Phone' }}
+              </h5>
+              
+              <!-- Phone Number Section -->
+              <div *ngIf="!showOtpSection" class="phone-section">
+                <form [formGroup]="phoneForm" (ngSubmit)="sendOtp()">
+                  <div class="form-group mb-4">
+                    <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                    <div class="input-group input-group-lg">
+                      <span class="input-group-text bg-light">+91</span>
+                      <input type="tel" 
+                             id="phone" 
+                             formControlName="phone" 
+                             class="form-control" 
+                             placeholder="Enter 10-digit phone number"
+                             maxlength="10"
+                             [class.is-invalid]="phoneForm.get('phone')?.invalid && phoneForm.get('phone')?.touched"
+                             [disabled]="isLoading">
+                    </div>
+                    <div *ngIf="phoneForm.get('phone')?.invalid && phoneForm.get('phone')?.touched" 
+                         class="text-danger small mt-1">
+                      Please enter a valid 10-digit phone number
+                    </div>
+                  </div>
+                  
+                  <button type="submit" 
+                          class="btn btn-primary w-100 py-2" 
+                          [disabled]="phoneForm.invalid || isLoading">
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ isLoading ? 'Sending OTP...' : 'Send OTP via SMS' }}
+                  </button>
+                </form>
+                
+                <div class="alert alert-info mt-3 py-2 small">
+                  <i class="bi bi-info-circle me-1"></i>
+                  <strong>Real OTP:</strong> We'll send a 6-digit OTP to your phone via SMS
+                </div>
+                
+                <p class="text-muted small mt-3 text-center">
+                  By proceeding, you agree to our <a href="#">Privacy Policy</a>, <a href="#">User Agreement</a> and
+                  <a href="#">Terms of Service</a>.
+                </p>
+              </div>
+              
+              <!-- OTP Verification Section -->
+              <div *ngIf="showOtpSection" class="otp-section">
+                <div class="text-center mb-4">
+                  <div class="alert alert-success py-2 small">
+                    <i class="bi bi-check-circle me-1"></i>
+                    OTP sent to <strong>+91 {{ phoneNumber }}</strong>
+                  </div>
+                  <a href="#" class="text-primary small" (click)="backToPhone(); $event.preventDefault()"
+                     [class.disabled]="isLoading">
+                    Change phone number
+                  </a>
+                </div>
+                
+                <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+                  <div class="form-group mb-3">
+                    <label for="otp" class="form-label fw-semibold">Enter OTP</label>
+                    <input type="text" 
+                           id="otp" 
+                           formControlName="otp" 
+                           class="form-control text-center py-3" 
+                           placeholder="Enter 6-digit OTP"
+                           maxlength="6"
+                           style="font-size: 1.2rem; letter-spacing: 8px; font-weight: bold;"
+                           [class.is-invalid]="otpForm.get('otp')?.invalid && otpForm.get('otp')?.touched"
+                           [disabled]="isLoading">
+                    <div *ngIf="otpForm.get('otp')?.invalid && otpForm.get('otp')?.touched" 
+                         class="text-danger small mt-1">
+                      Please enter a valid 6-digit OTP
+                    </div>
+                  </div>
+                  
+                  <div class="mb-4 text-center">
+                    <span class="text-muted small">
+                      Didn't receive OTP? 
+                      <a href="#" 
+                         [class.text-muted]="!isResendEnabled || isLoading" 
+                         [class.text-primary]="isResendEnabled && !isLoading"
+                         (click)="resendOtp(); $event.preventDefault()"
+                         [style.pointer-events]="(isResendEnabled && !isLoading) ? 'auto' : 'none'">
+                        Resend OTP {{ !isResendEnabled ? '(' + countdown + 's)' : '' }}
+                      </a>
+                    </span>
+                  </div>
+                  
+                  <button type="submit" 
+                          class="btn btn-primary w-100 py-2" 
+                          [disabled]="otpForm.invalid || isLoading">
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ isLoading ? 'Verifying...' : 'Verify OTP & Login' }}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+.benefits {
+  background: linear-gradient(to bottom right, #eaf3ff, #ffffff);
+}
+
+input[type="tel"]::placeholder {
+  color: #ccc;
+}
+
+.country-phone-group .dropdown-toggle {
+  min-width: 90px;
+  justify-content: start;
+}
+
+@media (max-width: 576px) {
+  .country-phone-group {
+    flex-direction: column;
+  }
+  .country-phone-group .form-control {
+    margin-top: 0.5rem;
+  }
+   .modal-dialog {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* .phone-auth-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+} */
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+}
+
+.country-code {
+  flex: 0 0 100px;
+  margin-right: 10px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.btn {
+  /* padding: 0.5rem 1rem; */
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.otp-input-section {
+  text-align: center;
+}
+
+.slide-text {
+  white-space: nowrap;
+  display: inline-block;
+  position: absolute;
+  left: 100%;
+  animation: slide-left 10s linear infinite;
+  font-weight: 500;
+  color: #1ca9e1;
+  font-size: 1rem;
+}
+@keyframes slide-left {
+  0% {
+    left: 100%;
+  }
+  100% {
+    left: -100%;
+  }
+}
+
+
+@keyframes slideText {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Modal enhancements */
+.otp-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.benefits {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.benefits h6 {
+  color: white !important;
+}
+
+.benefits .text-muted {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.benefits .bg-light {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: none;
+}
+
+/* OTP input styling */
+input[type="text"] {
+  text-align: center;
+  font-family: 'Courier New', monospace;
+}
+
+/* Loading states */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Alert styling */
+.alert {
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .benefits {
+    display: none !important;
+  }
+}
+
+/* Disabled links */
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+/* Input group styling */
+.input-group-text {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+/* Form validation */
+.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.text-danger {
+  font-size: 0.875rem;
+}
+
+
+
+
+

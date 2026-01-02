@@ -1,0 +1,1352 @@
+<div class="booking-section">
+  <h1 class="text-center text-white here-heading">Your Journey, Our Promise</h1>
+
+  <!-- Desktop View -->
+  <div class="booking-card d-none d-lg-block">
+    <!-- Trip Type Selection -->
+    <div class="trip-types">
+      <button
+        type="button"
+        class="btn"
+        [class.btn-info]="selectedTripType === 'ONE WAY'"
+        [class.text-white]="selectedTripType === 'ONE WAY'"
+        (click)="selectTripType('ONE WAY')"
+      >
+        ONE WAY
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-info]="selectedTripType === 'ROUND TRIP'"
+        [class.text-white]="selectedTripType === 'ROUND TRIP'"
+        (click)="selectTripType('ROUND TRIP')"
+      >
+        ROUND TRIP
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-info]="selectedTripType === 'LOCAL'"
+        [class.text-white]="selectedTripType === 'LOCAL'"
+        (click)="selectTripType('LOCAL')"
+      >
+        LOCAL
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-info]="selectedTripType === 'AIRPORT'"
+        [class.text-white]="selectedTripType === 'AIRPORT'"
+        (click)="selectTripType('AIRPORT')"
+      >
+        AIRPORT
+      </button>
+    </div>
+
+    <!-- Booking Form -->
+    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+      <div class="row g-2 align-items-end bform mt-2">
+        <!-- City Input for Local -->
+        <div class="col" *ngIf="selectedTripType === 'LOCAL'">
+          <label for="city" class="form-label">CITY</label>
+          <input
+            type="text"
+            class="form-control"
+            id="city"
+            formControlName="city"
+            placeholder="Enter City"
+          />
+        </div>
+
+        <!-- From/To Location for One Way and Round Trip -->
+        <ng-container
+          *ngIf="
+            selectedTripType === 'ONE WAY' || selectedTripType === 'ROUND TRIP'
+          "
+        >
+          <div class="col">
+            <label for="fromLocation" class="form-label">FROM</label>
+            <input
+              type="text"
+              class="form-control"
+              id="fromLocation"
+              formControlName="fromLocation"
+              placeholder="Enter Pickup City"
+            />
+          </div>
+          <div class="col-auto d-flex align-items-end mb-2">
+            <button
+              type="button"
+              class="btn btn-link"
+              (click)="swapLocations()"
+            >
+              <i class="fas fa-exchange-alt"></i>
+            </button>
+          </div>
+          <div class="col">
+            <label for="toLocation" class="form-label">TO</label>
+            <input
+              type="text"
+              class="form-control"
+              id="toLocation"
+              formControlName="toLocation"
+              placeholder="Enter Drop City"
+            />
+          </div>
+        </ng-container>
+
+        <!-- Airport Pickup/Drop -->
+        <ng-container *ngIf="selectedTripType === 'AIRPORT'">
+          <div class="col">
+            <label for="pickupAddress" class="form-label">PICKUP ADDRESS</label>
+            <input
+              type="text"
+              class="form-control"
+              id="pickupAddress"
+              formControlName="pickupAddress"
+              [placeholder]="
+                bookingForm.get('airportTripType')?.value === 'dropToAirport'
+                  ? 'Start typing your address'
+                  : 'Start typing airport name or city'
+              "
+            />
+          </div>
+          <div class="col">
+            <label for="dropLocation" class="form-label">
+              DROP
+              {{
+                bookingForm.get('airportTripType')?.value === 'dropToAirport'
+                  ? 'AIRPORT'
+                  : 'ADDRESS'
+              }}
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="dropLocation"
+              formControlName="dropLocation"
+              [placeholder]="
+                bookingForm.get('airportTripType')?.value === 'dropToAirport'
+                  ? 'Start typing airport name or city'
+                  : 'Start typing your address'
+              "
+            />
+          </div>
+        </ng-container>
+
+        <!-- Pick Up Date -->
+        <div class="col">
+          <label for="pickupDate" class="form-label">PICK UP DATE</label>
+          <input
+            type="date"
+            class="form-control"
+            id="pickupDate"
+            formControlName="pickupDate"
+          />
+        </div>
+
+        <!-- Return Date for Round Trip -->
+        <div class="col" *ngIf="selectedTripType === 'ROUND TRIP'">
+          <label for="returnDate" class="form-label">RETURN DATE</label>
+          <input
+            type="date"
+            class="form-control"
+            id="returnDate"
+            formControlName="returnDate"
+          />
+        </div>
+
+        <!-- Pick Up Time -->
+        <div class="col">
+          <label for="pickupTime" class="form-label">PICK UP TIME</label>
+          <select
+            class="form-select"
+            id="pickupTime"
+            formControlName="pickupTime"
+          >
+            <option *ngFor="let time of timeSlots" [value]="time">
+              {{ time }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Explore Button -->
+      <div class="text-center explore-btn-wrapper">
+        <button
+          type="submit"
+          class="btn btn-primary btn-sm explore-btn"
+          [disabled]="!bookingForm.valid"
+        >
+          EXPLORE CABS
+        </button>
+      </div>
+    </form>
+    <!-- Rating Section remains unchanged -->
+    <div class="rating-section text-center mt-4 d-none">   
+      <div class="rating-badge">
+        <p class="text-white mb-2">India's Top Rated Car Rental Service</p>
+        <div class="app-ratings d-flex justify-content-center gap-3">
+          <div class="app-store">
+            <img
+              src="assets/images/app-store.png"
+              alt="App Store"
+              height="30"
+            />
+            <div class="rating">
+              <span>⭐⭐⭐⭐⭐</span>
+              <small>(4.2k+ Reviews)</small>
+            </div>
+          </div>
+          <div class="google">
+            <img src="assets/images/google.png" alt="Google" height="30" />
+            <div class="rating">
+              <span>⭐⭐⭐⭐⭐</span>
+              <small>(6.1k+ Reviews)</small>
+            </div>
+          </div>
+          <div class="play-store">
+            <img
+              src="assets/images/play-store.png"
+              alt="Play Store"
+              height="30"
+            />
+            <div class="rating">
+              <span>⭐⭐⭐⭐⭐</span>
+              <small>(15.5k+ Reviews)</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile View -->
+  <div class="booking-card-mobile d-block d-lg-none">
+    <!-- Main Trip Types -->
+    <div class="main-trip-types">
+      <button
+        type="button"
+        class="btn"
+        [class.active]="selectedMainType === 'OUTSTATION'"
+        (click)="selectMainType('OUTSTATION')"
+      >
+        OUTSTATION
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.active]="selectedMainType === 'LOCAL'"
+        (click)="selectMainType('LOCAL')"
+      >
+        LOCAL
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.active]="selectedMainType === 'AIRPORT'"
+        (click)="selectMainType('AIRPORT')"
+      >
+        AIRPORT
+      </button>
+    </div>
+
+    <!-- Subtitle -->
+    <div class="subtitle text-center" *ngIf="selectedMainType === 'OUTSTATION'">
+      INDIA'S PREMIER INTERCITY CABS
+    </div>
+    <div class="subtitle text-center" *ngIf="selectedMainType === 'AIRPORT'">
+      RELIABLE AIRPORT PICKUPS & DROPS
+    </div>
+
+    <!-- Sub Trip Types for Outstation -->
+    <div class="sub-trip-types" *ngIf="selectedMainType === 'OUTSTATION'">
+      <button
+        type="button"
+        class="btn"
+        [class.active]="selectedSubType === 'ONE WAY'"
+        (click)="selectSubType('ONE WAY')"
+      >
+        ONE WAY
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.active]="selectedSubType === 'ROUND TRIP'"
+        (click)="selectSubType('ROUND TRIP')"
+      >
+        ROUND TRIP
+      </button>
+    </div>
+
+    <!-- Mobile Booking Form -->
+    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="mobile-form">
+      <!-- Outstation Form -->
+      <ng-container *ngIf="selectedMainType === 'OUTSTATION'">
+        <div class="form-group">
+          <label>FROM</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="fromLocation"
+            placeholder="Enter Pickup City"
+          />
+        </div>
+        <div class="form-group">
+          <label>TO</label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="toLocation"
+              placeholder="Enter Drop City"
+            />
+            <button
+              type="button"
+              class="btn swap-btn"
+              (click)="swapLocations()"
+            >
+              <i class="fas fa-exchange-alt"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Airport Form -->
+      <ng-container *ngIf="selectedMainType === 'AIRPORT'">
+        <div class="airport-trip-types">
+          <button
+            type="button"
+            class="btn"
+            [class.active]="
+              bookingForm.get('airportTripType')?.value === 'dropToAirport'
+            "
+            (click)="
+              bookingForm.patchValue({ airportTripType: 'dropToAirport' })
+            "
+          >
+            DROP TO AIRPORT
+          </button>
+          <button
+            type="button"
+            class="btn"
+            [class.active]="
+              bookingForm.get('airportTripType')?.value === 'pickFromAirport'
+            "
+            (click)="
+              bookingForm.patchValue({ airportTripType: 'pickFromAirport' })
+            "
+          >
+            PICKUP FROM AIRPORT
+          </button>
+        </div>
+        <div class="form-group">
+          <label>PICKUP ADDRESS</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="pickupAddress"
+            placeholder="Start typing your address"
+          />
+        </div>
+        <div class="form-group">
+          <label>DROP AIRPORT</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="dropLocation"
+            placeholder="Start typing airport name or city"
+          />
+        </div>
+      </ng-container>
+
+      <!-- Common Fields -->
+      <div class="form-group">
+        <label>PICK UP</label>
+        <input type="date" class="form-control" formControlName="pickupDate" />
+      </div>
+      <div class="form-group">
+        <label>PICK UP AT</label>
+        <select class="form-control" formControlName="pickupTime">
+          <option *ngFor="let time of timeSlots" [value]="time">
+            {{ time }}
+          </option>
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary w-100"
+        [disabled]="!bookingForm.valid"
+      >
+        EXPLORE CABS
+      </button>
+    </form>
+
+    <!-- Mobile Rating Section -->
+    <div class="mobile-rating-section">
+      <p class="text-center text-white">India's Top Rated Car Rental Service</p>
+      <div class="mobile-ratings">
+        <div class="rating-item">
+          <img src="assets/images/app-store.png" alt="App Store" />
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <small>(4.2k+ Reviews)</small>
+        </div>
+        <div class="rating-item">
+          <img src="assets/images/google.png" alt="Google" />
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <small>(6.1k+ Reviews)</small>
+        </div>
+        <div class="rating-item">
+          <img src="assets/images/play-store.png" alt="Play Store" />
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <small>(15.5k+ Reviews)</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+interface TripTypes {
+  OUTSTATION: string;
+  LOCAL: string;
+  AIRPORT: string;
+}
+
+@Component({
+  selector: 'app-booking-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
+  templateUrl: './booking-form.component.html',
+  styleUrl: './booking-form.component.css'
+})
+export class BookingFormComponent implements OnInit {
+  bookingForm!: FormGroup;
+  selectedTripType: string = 'ONE WAY';
+  selectedMainType: string = 'OUTSTATION';
+  selectedSubType: string = 'ONE WAY';
+  timeSlots: string[] = [];
+  today: string = new Date().toISOString().split('T')[0];
+
+  readonly TRIP_TYPES: TripTypes = {
+    OUTSTATION: 'OUTSTATION',
+    LOCAL: 'LOCAL',
+    AIRPORT: 'AIRPORT'
+  };
+
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.initializeForm();
+    this.generateTimeSlots();
+  }
+
+  ngOnInit(): void {
+    this.updateFormValidation();
+    this.setMinDates();
+    this.handleAirportTripTypeChanges();
+  }
+
+  private initializeForm(): void {
+    this.bookingForm = this.fb.group({
+      fromLocation: ['', [Validators.required]],
+      toLocation: ['', [Validators.required]],
+      city: [''],
+      airportTripType: ['dropToAirport'],
+      pickupAddress: [''],
+      dropLocation: [''],
+      pickupDate: [this.today, [Validators.required]],
+      returnDate: [this.today],
+      pickupTime: ['7:00 AM', [Validators.required]]
+    });
+  }
+
+  private handleAirportTripTypeChanges(): void {
+    this.bookingForm.get('airportTripType')?.valueChanges.subscribe(value => {
+      this.bookingForm.patchValue({
+        pickupAddress: '',
+        dropLocation: ''
+      });
+    });
+  }
+
+  private setMinDates(): void {
+    const dateInputs = ['pickupDate', 'returnDate'];
+    dateInputs.forEach(id => {
+      const element = document.getElementById(id) as HTMLInputElement;
+      if (element) {
+        element.min = this.today;
+      }
+    });
+  }
+
+  selectTripType(type: string): void {
+    this.selectedTripType = type;
+    this.selectedMainType = type === 'ONE WAY' || type === 'ROUND TRIP' ? 'OUTSTATION' : type;
+    this.selectedSubType = type === 'ROUND TRIP' ? 'ROUND TRIP' : 'ONE WAY';
+    this.updateFormValidation();
+    this.resetFormFields();
+  }
+
+  selectMainType(type: string): void {
+    this.selectedMainType = type;
+    if (type === this.TRIP_TYPES.OUTSTATION) {
+      this.selectedSubType = 'ONE WAY';
+      this.selectedTripType = 'ONE WAY';
+    } else {
+      this.selectedTripType = type;
+    }
+    this.updateFormValidation();
+    this.resetFormFields();
+  }
+
+  selectSubType(type: string): void {
+    this.selectedSubType = type;
+    this.selectedTripType = type;
+    this.updateFormValidation();
+    this.resetFormFields();
+  }
+
+  private resetFormFields(): void {
+    const currentValues = {
+      pickupDate: this.bookingForm.get('pickupDate')?.value,
+      pickupTime: this.bookingForm.get('pickupTime')?.value,
+      airportTripType: this.bookingForm.get('airportTripType')?.value
+    };
+
+    this.bookingForm.reset(currentValues);
+  }
+
+  private updateFormValidation(): void {
+    const controls = this.bookingForm.controls;
+    
+    // Reset all validators
+    Object.keys(controls).forEach(key => {
+      controls[key].clearValidators();
+      controls[key].updateValueAndValidity();
+    });
+
+    // Set common validators
+    controls['pickupDate'].setValidators([Validators.required]);
+    controls['pickupTime'].setValidators([Validators.required]);
+
+    // Set specific validators based on trip type
+    switch (this.selectedTripType) {
+      case 'LOCAL':
+        controls['city'].setValidators([Validators.required]);
+        break;
+      case 'AIRPORT':
+        controls['pickupAddress'].setValidators([Validators.required]);
+        controls['dropLocation'].setValidators([Validators.required]);
+        break;
+      case 'ROUND TRIP':
+        controls['fromLocation'].setValidators([Validators.required]);
+        controls['toLocation'].setValidators([Validators.required]);
+        controls['returnDate'].setValidators([Validators.required]);
+        break;
+      default: // ONE WAY
+        controls['fromLocation'].setValidators([Validators.required]);
+        controls['toLocation'].setValidators([Validators.required]);
+    }
+
+    Object.keys(controls).forEach(key => {
+      controls[key].updateValueAndValidity();
+    });
+  }
+
+  private generateTimeSlots(): void {
+    this.timeSlots = [];
+    for (let i = 0; i < 24; i++) {
+      const hour = i === 0 ? 12 : i > 12 ? i - 12 : i;
+      const period = i < 12 ? 'AM' : 'PM';
+      ['00', '30'].forEach(minutes => {
+        this.timeSlots.push(`${hour}:${minutes} ${period}`);
+      });
+    }
+  }
+
+  swapLocations(): void {
+    const fromLocation = this.bookingForm.get('fromLocation')?.value;
+    const toLocation = this.bookingForm.get('toLocation')?.value;
+    
+    this.bookingForm.patchValue({
+      fromLocation: toLocation,
+      toLocation: fromLocation
+    });
+  }
+
+  onSubmit(): void {
+    if (this.bookingForm.valid) {
+      const formData = {
+        ...this.bookingForm.value,
+        tripType: this.selectedTripType,
+        mainType: this.selectedMainType,
+        subType: this.selectedSubType
+      };
+      
+      // Navigate based on trip type
+      switch (this.selectedTripType) {
+        case 'ONE WAY':
+          this.router.navigate(['/oneway'], { state: { bookingData: formData }});
+          break;
+        case 'LOCAL':
+          this.router.navigate(['/local'], { state: { bookingData: formData }});
+          break;
+        case 'ROUND TRIP':
+          this.router.navigate(['/round-trip'], { state: { bookingData: formData }});
+          break;
+        case 'AIRPORT':
+          this.router.navigate(['/airport'], { state: { bookingData: formData }});
+          break;
+      }
+    } else {
+      Object.keys(this.bookingForm.controls).forEach(key => {
+        const control = this.bookingForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
+        }
+      });
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+.booking-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                url('/assets/images/booking-bg.png') no-repeat center center;
+    background-size: cover;
+    padding: 4rem 1rem;
+    min-height: 70vh;
+    /* background: linear-gradient(to right, #0f2027, #203a43, #2c5364); dark blue tones */
+     /* background: linear-gradient(to bottom, rgba(248, 149, 35, 0.85), rgba(252, 186, 64, 0.65), rgba(44, 83, 100, 0)); */
+ 
+    }  
+
+  .here-heading{
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;  
+  }
+  .explore-btn-wrapper{
+          position: absolute;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          margin-top: 15px;
+          background: #ff7716;
+          border-radius: 8px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      
+  }
+  .booking-card {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Trip Type Buttons */
+  .trip-types {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    gap: 10px;
+  }
+  .bform{
+    margin-bottom: 35px;
+  }
+  .trip-types .btn {
+    padding: 10px 25px;
+    min-width: 130px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+  }
+  
+  .trip-types .btn-info {
+    background-color: #000000;
+    border-color: #000000;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .trip-types .btn-outline-secondary {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    color: #424242;
+  }
+  
+  .trip-types .btn-outline-secondary:hover {
+    background-color: #000000;
+    border-color: #000000;
+    color: #ffffff;
+  }
+  
+  /* Form Controls */
+  .form-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #333333;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .form-control, .form-select {
+    border: 1px solid #e0e0e0;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+  
+  .form-control:focus, .form-select:focus {
+    border-color: #000000;
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-control::placeholder {
+    color: #9e9e9e;
+    font-size: 0.9rem;
+  }
+  
+  /* Explore Button */
+  .btn-primary {
+    background-color: #ff6b00;
+    border-color: #ff6b00;
+    padding: 14px 45px;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+  }
+  
+  .btn-primary:hover {
+    background-color: #ff5722;
+    border-color: #ff5722;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+  
+  /* Rating Section */
+  .rating-section {
+    margin-top: 4rem;
+  }
+  
+  .rating-section .rating-badge {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 25px 35px;
+    border-radius: 15px;
+    display: inline-block;
+  }
+  
+  .rating-section .app-ratings {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 30px;
+    align-items: center;
+  }
+  
+  .rating-section .rating {
+    margin-top: 8px;
+    text-align: center;
+  }
+  
+  .rating-section .rating span {
+    color: #ffd700;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+  }
+  
+  .rating-section .rating small {
+    color: #757575;
+    display: block;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  
+  /* Input Groups */
+  .input-group-text {
+    background-color: #f5f5f5;
+    border-color: #e0e0e0;
+    padding: 0.75rem;
+  }
+  
+  .input-group-text i {
+    color: #616161;
+    font-size: 1.1rem;
+  }
+  
+  /* Swap Button */
+  .btn-link {
+    color: #424242;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-link:hover {
+    color: #000000;
+    transform: rotate(180deg);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 992px) {
+    .booking-card {
+      padding: 1.5rem;
+    }
+  
+    .trip-types {
+      flex-wrap: wrap;
+    }
+  
+    .trip-types .btn {
+      min-width: calc(50% - 10px);
+      margin: 0;
+    }
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .booking-section {
+      padding: 1rem 0 0;
+      min-height: 100vh;
+    }
+  
+    .booking-card-mobile {
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 1.25rem;
+      margin-top: 2rem;
+    }
+  
+    .main-trip-types {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 1rem;
+    }
+  
+    .main-trip-types .btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 0.875rem;
+      border: none;
+      background: #f5f5f5;
+      color: #666;
+    }
+  
+    .main-trip-types .btn.active {
+      background: #00a6e6;
+      color: white;
+    }
+  
+    .subtitle {
+      color: #666;
+      font-size: 0.75rem;
+      margin: 0.5rem 0;
+    }
+  
+    .sub-trip-types {
+      display: flex;
+      gap: 5px;
+      margin: 1rem 0;
+    }
+  
+    .sub-trip-types .btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 0.875rem;
+      background: #f5f5f5;
+      border: none;
+    }
+  
+    .sub-trip-types .btn.active {
+      background: #00a6e6;
+      color: white;
+    }
+  
+    .mobile-form {
+      margin-top: 1rem;
+    }
+  
+    .form-group {
+      margin-bottom: 1rem;
+    }
+  
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      color: #666;
+    }
+  
+    .form-control {
+      width: 100%;
+      padding: 0.5rem;
+      border: none;
+      border-bottom: 1px solid #ddd;
+      border-radius: 0;
+      font-size: 0.875rem;
+    }
+  
+    .swap-btn {
+      background: none;
+      border: none;
+      color: #00a6e6;
+      padding: 0 0.5rem;
+    }
+  
+    .btn-primary {
+      background: #ff6b00;
+      border: none;
+      padding: 0.75rem;
+      margin-top: 1.5rem;
+      font-weight: 500;
+    }
+  
+    .mobile-rating-section {
+      margin-top: 2rem;
+      text-align: center;
+    }
+  
+    .mobile-ratings {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+  
+    .rating-item {
+      text-align: center;
+    }
+  
+    .rating-item img {
+      height: 20px;
+      margin-bottom: 0.25rem;
+    }
+  
+    .stars {
+      font-size: 0.75rem;
+      color: #ffd700;
+    }
+  
+    .rating-item small {
+      font-size: 0.625rem;
+      color: #666;
+    }
+  }
+  
+    .rating-section .app-ratings {
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .form-control, .form-select {
+      padding: 0.625rem;
+    }
+  
+    .btn-primary {
+      padding: 12px 30px;
+      width: 100%;
+      opacity: 1;
+    }
+  
+  @media (max-width: 576px) {
+    .trip-types .btn {
+      min-width: 100%;
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+interface TripTypes {
+  OUTSTATION: string;
+  LOCAL: string;
+  AIRPORT: string;
+}
+
+@Component({
+  selector: 'app-booking-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
+  templateUrl: './booking-form.component.html',
+  styleUrl: './booking-form.component.css'
+})
+export class BookingFormComponent implements OnInit {
+  bookingForm!: FormGroup;
+  selectedTripType: string = 'ONE WAY';
+  selectedMainType: string = 'OUTSTATION';
+  selectedSubType: string = 'ONE WAY';
+  timeSlots: string[] = [];
+  today: string = new Date().toISOString().split('T')[0];
+
+  readonly TRIP_TYPES: TripTypes = {
+    OUTSTATION: 'OUTSTATION',
+    LOCAL: 'LOCAL',
+    AIRPORT: 'AIRPORT'
+  };
+
+  popularCities: string[] = [
+    'Bangalore, Karnataka',
+    'New Delhi, Delhi',
+    'Mumbai, Maharashtra',
+    'Chennai, Tamil Nadu',
+    'Pune, Maharashtra',
+    'Hyderabad, Telangana',
+    'Ahmedabad, Gujarat',
+    // ...add more
+  ];
+
+  popularLocalCities: string[] = [
+    'Kolkata, West Bengal',
+    'Howrah, West Bengal',
+    'Salt Lake, Kolkata',
+    'New Town, Kolkata',
+    'Dumdum, Kolkata',
+    'Ballygunge, Kolkata',
+    // ...add more as needed
+  ];
+
+  // Example data (replace with your real data)
+  allAirports: string[] = [
+    'Netaji Subhas Chandra Bose International Airport',
+    'Chhatrapati Shivaji Maharaj International Airport',
+    'Indira Gandhi International Airport',
+    // ...more airports
+  ];
+  allAddresses: string[] = [
+    'Salt Lake, Kolkata',
+    'Howrah, West Bengal',
+    'Park Street, Kolkata',
+    // ...more addresses
+  ];
+
+  showFromDropdown = false;
+  showToDropdown = false;
+  showLocalCityDropdown = false;
+  showDropLocationDropdown = false;
+  showPickupAddressDropdown = false;
+  filteredFromCities: string[] = this.popularCities;
+  filteredToCities: string[] = this.popularCities;
+  filteredLocalCities: string[] = this.popularLocalCities;
+  filteredDropLocations: string[] = this.allAirports;
+  filteredPickupAddresses: string[] = this.allAddresses;
+
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.initializeForm();
+    this.generateTimeSlots();
+  }
+
+  ngOnInit(): void {
+    this.updateFormValidation();
+    this.setMinDates();
+    this.handleAirportTripTypeChanges();
+  }
+
+  private initializeForm(): void {
+    this.bookingForm = this.fb.group({
+      fromLocation: ['', [Validators.required]],
+      toLocation: ['', [Validators.required]],
+      city: [''],
+      airportTripType: ['dropToAirport'],
+      pickupAddress: [''],
+      dropLocation: [''],
+      pickupDate: [this.today, [Validators.required]],
+      returnDate: [this.today],
+      pickupTime: ['7:00 AM', [Validators.required]]
+    });
+  }
+
+  private handleAirportTripTypeChanges(): void {
+    this.bookingForm.get('airportTripType')?.valueChanges.subscribe(value => {
+      this.bookingForm.patchValue({
+        pickupAddress: '',
+        dropLocation: ''
+      });
+    });
+  }
+
+  private setMinDates(): void {
+    const dateInputs = ['pickupDate', 'returnDate'];
+    dateInputs.forEach(id => {
+      const element = document.getElementById(id) as HTMLInputElement;
+      if (element) {
+        element.min = this.today;
+      }
+    });
+  }
+
+  selectTripType(type: string): void {
+    this.selectedTripType = type;
+    this.selectedMainType = type === 'ONE WAY' || type === 'ROUND TRIP' ? 'OUTSTATION' : type;
+    this.selectedSubType = type === 'ROUND TRIP' ? 'ROUND TRIP' : 'ONE WAY';
+    this.updateFormValidation();
+    this.resetFormFields();
+  }
+
+  selectMainType(type: string): void {
+    this.selectedMainType = type;
+    if (type === this.TRIP_TYPES.OUTSTATION) {
+      this.selectedSubType = 'ONE WAY';
+      this.selectedTripType = 'ONE WAY';
+    } else {
+      this.selectedTripType = type;
+    }
+    this.updateFormValidation();
+    this.resetFormFields();
+  }
+
+  selectSubType(type: string): void {
+    this.selectedSubType = type;
+    this.selectedTripType = type;
+    this.updateFormValidation();
+    this.resetFormFields();
+  }
+
+  private resetFormFields(): void {
+    const currentValues = {
+      pickupDate: this.bookingForm.get('pickupDate')?.value,
+      pickupTime: this.bookingForm.get('pickupTime')?.value,
+      airportTripType: this.bookingForm.get('airportTripType')?.value
+    };
+
+    this.bookingForm.reset(currentValues);
+  }
+
+  private updateFormValidation(): void {
+    const controls = this.bookingForm.controls;
+    
+    // Reset all validators
+    Object.keys(controls).forEach(key => {
+      controls[key].clearValidators();
+      controls[key].updateValueAndValidity();
+    });
+
+    // Set common validators
+    controls['pickupDate'].setValidators([Validators.required]);
+    controls['pickupTime'].setValidators([Validators.required]);
+
+    // Set specific validators based on trip type
+    switch (this.selectedTripType) {
+      case 'LOCAL':
+        controls['city'].setValidators([Validators.required]);
+        break;
+      case 'AIRPORT':
+        controls['pickupAddress'].setValidators([Validators.required]);
+        controls['dropLocation'].setValidators([Validators.required]);
+        break;
+      case 'ROUND TRIP':
+        controls['fromLocation'].setValidators([Validators.required]);
+        controls['toLocation'].setValidators([Validators.required]);
+        controls['returnDate'].setValidators([Validators.required]);
+        break;
+      default: // ONE WAY
+        controls['fromLocation'].setValidators([Validators.required]);
+        controls['toLocation'].setValidators([Validators.required]);
+    }
+
+    Object.keys(controls).forEach(key => {
+      controls[key].updateValueAndValidity();
+    });
+  }
+
+  private generateTimeSlots(): void {
+    this.timeSlots = [];
+    for (let i = 0; i < 24; i++) {
+      const hour = i === 0 ? 12 : i > 12 ? i - 12 : i;
+      const period = i < 12 ? 'AM' : 'PM';
+      ['00', '30'].forEach(minutes => {
+        this.timeSlots.push(`${hour}:${minutes} ${period}`);
+      });
+    }
+  }
+
+  swapLocations(): void {
+    const fromLocation = this.bookingForm.get('fromLocation')?.value;
+    const toLocation = this.bookingForm.get('toLocation')?.value;
+    
+    this.bookingForm.patchValue({
+      fromLocation: toLocation,
+      toLocation: fromLocation
+    });
+  }
+
+  onSubmit(): void {
+    if (this.bookingForm.valid) {
+      const formData = {
+        ...this.bookingForm.value,
+        tripType: this.selectedTripType,
+        mainType: this.selectedMainType,
+        subType: this.selectedSubType
+      };
+      
+      // Navigate based on trip type
+      switch (this.selectedTripType) {
+        case 'ONE WAY':
+          this.router.navigate(['/oneway'], { state: { bookingData: formData }});
+          break;
+        case 'LOCAL':
+          this.router.navigate(['/local'], { state: { bookingData: formData }});
+          break;
+        case 'ROUND TRIP':
+          this.router.navigate(['/round-trip'], { state: { bookingData: formData }});
+          break;
+        case 'AIRPORT':
+          this.router.navigate(['/airport'], { state: { bookingData: formData }});
+          break;
+      }
+    } else {
+      Object.keys(this.bookingForm.controls).forEach(key => {
+        const control = this.bookingForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
+        }
+      });
+    }
+  }
+
+  filterFromCities(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filteredFromCities = this.popularCities.filter(city =>
+      city.toLowerCase().includes(value.toLowerCase())
+    );
+    this.showFromDropdown = true;
+  }
+
+  filterToCities(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filteredToCities = this.popularCities.filter(city =>
+      city.toLowerCase().includes(value.toLowerCase())
+    );
+    this.showToDropdown = true;
+  }
+
+  filterLocalCities(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filteredLocalCities = this.popularLocalCities.filter(city =>
+      city.toLowerCase().includes(value.toLowerCase())
+    );
+    this.showLocalCityDropdown = true;
+  }
+
+  filterDropLocations(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filteredDropLocations = this.allAirports.filter(airport =>
+      airport.toLowerCase().includes(value.toLowerCase())
+    );
+    this.showDropLocationDropdown = true;
+  }
+
+  filterPickupAddresses(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filteredPickupAddresses = this.allAddresses.filter(address =>
+      address.toLowerCase().includes(value.toLowerCase())
+    );
+    this.showPickupAddressDropdown = true;
+  }
+
+  selectFromCity(city: string) {
+    this.bookingForm.get('fromLocation')?.setValue(city);
+    this.showFromDropdown = false;
+  }
+
+  selectToCity(city: string) {
+    this.bookingForm.get('toLocation')?.setValue(city);
+    this.showToDropdown = false;
+  }
+
+  selectLocalCity(city: string) {
+    this.bookingForm.get('city')?.setValue(city);
+    this.showLocalCityDropdown = false;
+  }
+
+  selectDropLocation(airport: string) {
+    this.bookingForm.get('dropLocation')?.setValue(airport);
+    this.showDropLocationDropdown = false;
+  }
+
+  selectPickupAddress(address: string) {
+    this.bookingForm.get('pickupAddress')?.setValue(address);
+    this.showPickupAddressDropdown = false;
+  }
+
+  // Optional: Hide dropdown after blur with delay to allow click
+  hideDropdownWithDelay(type: 'local' | 'from' | 'to' | 'dropLocation' | 'pickupAddress') {
+    setTimeout(() => {
+      if (type === 'local') this.showLocalCityDropdown = false;
+      if (type === 'from') this.showFromDropdown = false;
+      if (type === 'to') this.showToDropdown = false;
+      if (type === 'dropLocation') this.showDropLocationDropdown = false;
+      if (type === 'pickupAddress') this.showPickupAddressDropdown = false;
+    }, 200);
+  }
+}
