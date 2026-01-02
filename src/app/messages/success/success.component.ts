@@ -790,10 +790,6 @@ import { environment } from '../../../environments/environment.prod';
       font-weight: 600;
     }
 
-    .payment-breakdown {
-      // max-width: 500px;
-    }
-
     .payment-row {
       display: flex;
       justify-content: space-between;
