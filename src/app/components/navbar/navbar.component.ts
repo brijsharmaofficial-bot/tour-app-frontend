@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environments/environment.prod';
+
 
 @Component({
   selector: 'app-navbar',
@@ -12,6 +14,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
+
+  private apiUrl = environment.apiUrl;
+  
   loginForm!: FormGroup;
   registerForm!: FormGroup;
   showRegister = false;
@@ -44,7 +49,7 @@ export class NavbarComponent {
 
   onLogin() {
     if (this.loginForm.valid) {
-      this.http.post<any>('http://127.0.0.1:8000/api/login', this.loginForm.value)
+      this.http.post<any>(`${this.apiUrl}/login`, this.loginForm.value)
         .subscribe({
           next: (response) => {
             localStorage.setItem('access_token', response.access_token);
@@ -68,7 +73,7 @@ export class NavbarComponent {
 
   onRegister() {
     if (this.registerForm.valid) {
-      this.http.post<any>('http://127.0.0.1:8000/api/register', this.registerForm.value)
+      this.http.post<any>(`${this.apiUrl}/register`, this.registerForm.value)
         .subscribe({
           next: (response) => {
            

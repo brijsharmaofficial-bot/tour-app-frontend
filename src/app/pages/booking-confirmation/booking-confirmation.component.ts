@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment.prod';
 
 
 interface BookingData {
@@ -62,6 +63,9 @@ interface TabContentItem {
   styleUrls: ['./booking-confirmation.component.css']
 })
 export class BookingConfirmationComponent implements OnInit {
+
+  private apiUrl = environment.apiUrl;
+  
   airports = [
     { name: 'Kempegowda International Airport Bengaluru (BLR)', location: 'Karnataka' },
     { name: 'Kempegowda International Airport', location: 'Kempegowda International Airport Bengaluru (BLR), Bengaluru, Karnataka' }
@@ -236,7 +240,7 @@ export class BookingConfirmationComponent implements OnInit {
       password: randomPassword  // default password
     };
   
-    this.http.post('http://127.0.0.1:8000/api/register', registerPayload)
+    this.http.post(`${this.apiUrl}/register`, registerPayload)
       .subscribe({
         next: (response: any) => {
           
