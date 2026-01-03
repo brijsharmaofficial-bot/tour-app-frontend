@@ -1,7 +1,7 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://laravel-api.onrender.com',
-    appName: 'My Angular App',
+    apiUrl: 'https://newwebsite.carrentalkolkata.com/api',
+    appName: 'Car Rental Kolkata',
 
     msg91: {
       authKey: 'YOUR_PROD_MSG91_AUTH_KEY',
@@ -11,4 +11,5 @@ export const environment = {
       enabled: true
     }
     
+
   };
