@@ -62,9 +62,6 @@ export class CarService {
     });
   }
 
-
-
-
   getCarTypes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/car-types`);
   }
