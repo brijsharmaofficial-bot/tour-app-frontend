@@ -8,6 +8,7 @@ import { HomeOurservicesSectionComponent } from '../../home-ourservices-section/
 import Swiper from 'swiper';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { PageService } from '../../services/page.service';
+import { FeaturesSectionComponent } from '../features-section/features-section.component';
 
 Swiper.use([Navigation, Pagination, Autoplay]);
 
@@ -21,6 +22,7 @@ Swiper.use([Navigation, Pagination, Autoplay]);
     CommonModule,
     HomeOffersSectionComponent,
     HomeOurservicesSectionComponent,
+    FeaturesSectionComponent,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']

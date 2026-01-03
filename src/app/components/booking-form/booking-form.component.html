@@ -2,7 +2,7 @@
   <h1 class="text-center text-white here-heading" *ngIf="!isModal">Your Journey, Our Promise</h1>
 
   <!-- Desktop View -->
-  <div class="booking-card d-none d-lg-block">
+  <div class="booking-card d-none d-md-block">
     <!-- Trip Type Selection -->
     <div class="trip-types">
       <button type="button" class="btn f" [class.btn-info]="selectedTripType === 'ONE WAY'"
@@ -45,7 +45,6 @@
             </div>
           </div>
         </div>
-
         <!-- From/To Location for One Way and Round Trip -->
         <ng-container *ngIf="
             selectedTripType === 'ONE WAY' || selectedTripType === 'ROUND TRIP'
@@ -223,7 +222,7 @@
   </div>
 
   <!-- Mobile View -->
-  <div class="booking-card-mobile d-block d-lg-none p-3 rounded-4 shadow-lg bg-white">
+  <div class="booking-card-mobile d-block d-md-none p-3 rounded-4 shadow-lg bg-white">
     <!-- Main Trip Types Tabs -->
     <div class="main-trip-types d-flex justify-content-between mb-2">
       <button type="button" class="btn trip-tab flex-fill" [class.active]="selectedMainType === 'OUTSTATION'"
@@ -304,6 +303,9 @@
               <div class="dropdown-menu show w-100"
                    *ngIf="showFromDropdown && filteredFromCities.length"
                    style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                   <div class="dropdown-header fw-bold small text-primary">
+                    POPULAR CITIES
+                  </div>
                 <button type="button"
                         class="dropdown-item"
                         *ngFor="let city of filteredFromCities"
@@ -347,6 +349,9 @@
                 
                   <div class="dropdown-menu show w-100" *ngIf="showToDropdown && filteredToCities.length"
                     style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                    <div class="dropdown-header fw-bold small text-primary">
+                      POPULAR CITIES
+                    </div>
                     <button type="button" class="dropdown-item" *ngFor="let city of filteredToCities"
                       (mousedown)="selectToCity(city)">{{ city.name }}, {{ city.state }}</button>
                   </div>
@@ -413,6 +418,9 @@
                 autocomplete="off" />
                 <div class="dropdown-menu show w-100" *ngIf="showLocalCityDropdown && filteredLocalCities.length"
                 style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                <div class="dropdown-header fw-bold small text-primary">
+                  POPULAR CITIES
+                </div>
                 <button type="button" class="dropdown-item" *ngFor="let city of filteredLocalCities"
                 (mousedown)="selectLocalCity(city)">{{ city.name }}, {{ city.state }}</button>
               </div>
@@ -527,25 +535,27 @@
         style="background:#FF6B1A; border-radius:8px; font-weight:bold; font-size:1.1rem;"
         [disabled]="!bookingForm.valid">EXPLORE CABS</button>
     </form>
+  </div>
 
+  <div class="d-block d-md-none">
     <!-- Mobile Rating Section -->
-    <div class="mobile-rating-section d-none">
-      <p class="text-center text-white">India's Top Rated Car Rental Service</p>
+    <div class="mobile-rating-section px-2 py-3">
+      <h5 class="text-center text-white">India's Top Rated Car Rental Service</h5>
       <div class="mobile-ratings">
         <div class="rating-item">
-          <img src="assets/images/app-store.png" alt="App Store" />
+          <img src="assets/icons/app-store.jpeg" alt="App Store" />
           <div class="stars">⭐⭐⭐⭐⭐</div>
-          <small>(4.2k+ Reviews)</small>
+          <small>(1.2k+ Reviews)</small>
         </div>
         <div class="rating-item">
-          <img src="assets/images/google.png" alt="Google" />
+          <img src="assets/icons/google.png" alt="Google" />
           <div class="stars">⭐⭐⭐⭐⭐</div>
-          <small>(6.1k+ Reviews)</small>
+          <small>(2.1k+ Reviews)</small>
         </div>
         <div class="rating-item">
-          <img src="assets/images/play-store.png" alt="Play Store" />
+          <img src="assets/icons/play-store.png" alt="Play Store" />
           <div class="stars">⭐⭐⭐⭐⭐</div>
-          <small>(15.5k+ Reviews)</small>
+          <small>(3.5k+ Reviews)</small>
         </div>
       </div>
     </div>
